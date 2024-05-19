@@ -1,0 +1,42 @@
+lib: [
+  "_build/install/default/lib/tlp_tipe/META"
+  "_build/install/default/lib/tlp_tipe/dune-package"
+  "_build/install/default/lib/tlp_tipe/lexer/lexer.a" {"lexer/lexer.a"}
+  "_build/install/default/lib/tlp_tipe/lexer/lexer.cma" {"lexer/lexer.cma"}
+  "_build/install/default/lib/tlp_tipe/lexer/lexer.cmi" {"lexer/lexer.cmi"}
+  "_build/install/default/lib/tlp_tipe/lexer/lexer.cmt" {"lexer/lexer.cmt"}
+  "_build/install/default/lib/tlp_tipe/lexer/lexer.cmx" {"lexer/lexer.cmx"}
+  "_build/install/default/lib/tlp_tipe/lexer/lexer.cmxa" {"lexer/lexer.cmxa"}
+  "_build/install/default/lib/tlp_tipe/lexer/lexer.ml" {"lexer/lexer.ml"}
+  "_build/install/default/lib/tlp_tipe/opam"
+  "_build/install/default/lib/tlp_tipe/parser/parser.a" {"parser/parser.a"}
+  "_build/install/default/lib/tlp_tipe/parser/parser.cma" {"parser/parser.cma"}
+  "_build/install/default/lib/tlp_tipe/parser/parser.cmi" {"parser/parser.cmi"}
+  "_build/install/default/lib/tlp_tipe/parser/parser.cmt" {"parser/parser.cmt"}
+  "_build/install/default/lib/tlp_tipe/parser/parser.cmx" {"parser/parser.cmx"}
+  "_build/install/default/lib/tlp_tipe/parser/parser.cmxa" {"parser/parser.cmxa"}
+  "_build/install/default/lib/tlp_tipe/parser/parser.ml" {"parser/parser.ml"}
+  "_build/install/default/lib/tlp_tipe/token/token.a" {"token/token.a"}
+  "_build/install/default/lib/tlp_tipe/token/token.cma" {"token/token.cma"}
+  "_build/install/default/lib/tlp_tipe/token/token.cmi" {"token/token.cmi"}
+  "_build/install/default/lib/tlp_tipe/token/token.cmt" {"token/token.cmt"}
+  "_build/install/default/lib/tlp_tipe/token/token.cmx" {"token/token.cmx"}
+  "_build/install/default/lib/tlp_tipe/token/token.cmxa" {"token/token.cmxa"}
+  "_build/install/default/lib/tlp_tipe/token/token.ml" {"token/token.ml"}
+  "_build/install/default/lib/tlp_tipe/types/types.a" {"types/types.a"}
+  "_build/install/default/lib/tlp_tipe/types/types.cma" {"types/types.cma"}
+  "_build/install/default/lib/tlp_tipe/types/types.cmi" {"types/types.cmi"}
+  "_build/install/default/lib/tlp_tipe/types/types.cmt" {"types/types.cmt"}
+  "_build/install/default/lib/tlp_tipe/types/types.cmx" {"types/types.cmx"}
+  "_build/install/default/lib/tlp_tipe/types/types.cmxa" {"types/types.cmxa"}
+  "_build/install/default/lib/tlp_tipe/types/types.ml" {"types/types.ml"}
+]
+libexec: [
+  "_build/install/default/lib/tlp_tipe/lexer/lexer.cmxs" {"lexer/lexer.cmxs"}
+  "_build/install/default/lib/tlp_tipe/parser/parser.cmxs" {"parser/parser.cmxs"}
+  "_build/install/default/lib/tlp_tipe/token/token.cmxs" {"token/token.cmxs"}
+  "_build/install/default/lib/tlp_tipe/types/types.cmxs" {"types/types.cmxs"}
+]
+bin: [
+  "_build/install/default/bin/tlp_tipe"
+]

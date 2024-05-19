@@ -1,0 +1,5 @@
+(library
+ (name parser)
+ (public_name tlp_tipe.parser)
+ (preprocess (pps ppx_deriving.show))
+ (libraries lexer types))

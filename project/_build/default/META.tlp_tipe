@@ -1,0 +1,36 @@
+package "lexer" (
+  directory = "lexer"
+  description = ""
+  requires = "tlp_tipe.token"
+  archive(byte) = "lexer.cma"
+  archive(native) = "lexer.cmxa"
+  plugin(byte) = "lexer.cma"
+  plugin(native) = "lexer.cmxs"
+)
+package "parser" (
+  directory = "parser"
+  description = ""
+  requires = "ppx_deriving.runtime tlp_tipe.lexer tlp_tipe.types"
+  archive(byte) = "parser.cma"
+  archive(native) = "parser.cmxa"
+  plugin(byte) = "parser.cma"
+  plugin(native) = "parser.cmxs"
+)
+package "token" (
+  directory = "token"
+  description = ""
+  requires = ""
+  archive(byte) = "token.cma"
+  archive(native) = "token.cmxa"
+  plugin(byte) = "token.cma"
+  plugin(native) = "token.cmxs"
+)
+package "types" (
+  directory = "types"
+  description = ""
+  requires = ""
+  archive(byte) = "types.cma"
+  archive(native) = "types.cmxa"
+  plugin(byte) = "types.cma"
+  plugin(native) = "types.cmxs"
+)

@@ -1,0 +1,5 @@
+(executable
+ (public_name tlp_tipe)
+ (name main)
+ (libraries lexer token parser)
+ (preprocess (pps ppx_deriving.show)))
