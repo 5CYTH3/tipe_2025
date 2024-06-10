@@ -28,7 +28,7 @@ package "token" (
 package "types" (
   directory = "types"
   description = ""
-  requires = ""
+  requires = "ppx_deriving.runtime"
   archive(byte) = "types.cma"
   archive(native) = "types.cmxa"
   plugin(byte) = "types.cma"

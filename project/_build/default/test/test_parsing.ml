@@ -3,7 +3,9 @@ open Token;;
 
 let parser_testable = Alcotest.testable Parser.pp_expr (fun x y -> x = y) 
 
-(* Template for testing lists used in the specialized tests *)
+(* TODO: Test individual values such as atoms *)
+
+(* Template for testing lists used in specialized tests *)
 let mock_test_parsing_lists p expected =
     let got = parse p in
     Alcotest.(check (Alcotest.list parser_testable)) "same lists" got expected

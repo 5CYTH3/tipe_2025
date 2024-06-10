@@ -4,4 +4,4 @@ type t =
     | Int
     | List of t * t
     | Nil
-;;
+    [@@deriving show];;

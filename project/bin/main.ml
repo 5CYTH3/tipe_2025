@@ -1,7 +1,7 @@
 open Token;;
 
 let () =
-    [LParen; Literal (Int 15); RParen] 
+    [LParen; Id "defun"; Id "add"; LParen; Id "x"; Id "y"; RParen; Id "x"; RParen] 
     |> Parser.parse
     |> Parser.show_ast
     |> print_string

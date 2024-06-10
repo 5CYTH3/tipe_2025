@@ -84,6 +84,7 @@
  (archives (byte types/types.cma) (native types/types.cmxa))
  (plugins (byte types/types.cma) (native types/types.cmxs))
  (native_archives types/types.a)
+ (requires ppx_deriving.runtime)
  (main_module_name Types)
  (modes byte native)
  (modules
