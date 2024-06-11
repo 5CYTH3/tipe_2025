@@ -42,8 +42,38 @@ let lists_suite = [
     Alcotest.test_case "List of lists and any" `Quick test_list_of_lists;
 ]
 
+
+(* Test functions that have no parameters *)
+(* Tested sequence : (defun x () 3) *)
+let test_no_args_fn () =
+    let got = parse [LParen; Id "defun"; Id "x"; LParen; RParen; Literal (Int 3); RParen] in
+    Alcotest.(check (Alcotest.list parser_testable)) "same lists" got [Function ("x", [], Atom (Int 3))]
+;;
+
+(* Test functions that have arguments *)
+(* Tested sequence : (defun x (y z) z) *)
+let test_args_fn () =
+    let got = parse [LParen; Id "defun"; Id "x"; LParen; Id "y"; Id "z"; RParen; Id "z"; RParen] in
+    Alcotest.(check (Alcotest.list parser_testable)) "same lists" got [Function ("x", ["y"; "z"], Atom (Id "z"))];;
+
+(* Test function that got a function definition in its body *)
+(* (defun x () (defun y () 3)) *)
+let test_nested_fn () = 
+    let got = parse [LParen; Id "defun"; Id "x"; LParen; RParen; LParen; Id "defun"; Id "y"; LParen; RParen; Literal (Int 3); RParen; RParen] in
+    Alcotest.(check (Alcotest.list parser_testable)) "same lists" got [Function ("x", [], Function ("y", [], Atom (Int 3)))]
+;;
+
+
+
+let function_suite = [
+    Alcotest.test_case "Function with no argument" `Quick test_no_args_fn;
+    Alcotest.test_case "Function with arguments" `Quick test_args_fn;
+    Alcotest.test_case "Two nested functions" `Quick test_nested_fn;
+]
+
 let () =
     Alcotest.run "Parser" 
     [ 
         "Lists", lists_suite;
+        "Functions", function_suite
     ]
