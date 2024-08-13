@@ -61,13 +61,13 @@ let rec unify t1 t2: subst =
         if List.mem v (free_tvs t) then
             raise (TypeError ("Occurs check failed for variable " ^ v))
         else
-            TypeMap.add v t (TypeMap.empty)
+            TypeMap.singleton v t
     | Abs (t1a, t1b), Abs (t2a, t2b) ->
         let s1 = unify t1a t2a in
         let s2 = unify (apply_subst s1 t1b) (apply_subst s1 t2b) in
         s2 *&* s1
     | Forall (v1, t1), Forall (v2, t2) ->
-        let t2' = apply_subst (TypeMap.add v2 (TVar v1) (TypeMap.empty)) t2 in
+        let t2' = apply_subst (TypeMap.singleton v2 (TVar v1)) t2 in
         unify t1 t2'
     | _ -> raise (TypeError "Cannot unify types")
 ;;
@@ -79,7 +79,7 @@ let generalize env t =
     List.fold_right (fun v t -> Forall (v, t)) vars_to_generalize t
 ;;
 
-let rec fresh_tv =
+let fresh_tv =
   let counter = ref 0 in
   fun () ->
     let v = "t" ^ string_of_int !counter in
@@ -91,7 +91,7 @@ let rec instantiate t =
     match t with
     | Forall (v, t) ->
         let fresh_var = fresh_tv () in
-        apply_subst (TypeMap.add v fresh_var (TypeMap.empty)) (instantiate t)
+        apply_subst (TypeMap.singleton v fresh_var) (instantiate t)
     | _ -> t
 ;;
 
