@@ -2,90 +2,97 @@ open Token;;
 
 type literal =
     | Str of string
-    | Id of string
     | Int of int
     | Bool of bool
 [@@deriving show]
 
 type expr =
-    | Function of string * string list * expr
-    | List of expr list
-    | Atom of literal
+    | Var of string
+    | Abs of string * expr
+    | App of expr * expr
+    | Let of string * expr * expr
+    | Literal of literal
 [@@deriving show]
 
 type ast = expr list
 [@@deriving show]
 
-(* Parsing expressions beginning with the character `(` *)
-let rec parse_lists (program: Token.t list): expr * Token.t list =
-    match program with
-    | LParen :: t -> begin
-        (* Enters the parsing list "state" *)
-        let (expr, rest) = parse_list_content t in 
-        match rest with
-        (* Deleting the trailing parenthese *)
-        | RParen :: t -> (expr, t)
-        | _ -> failwith "Missing closing parenthesis"
-    end
-    | _ -> failwith "Unexpected Token, expected LParen." 
-and parse_list_content (program: Token.t list): expr * Token.t list =
-    match program with
-    (* Handling the case of an empty list `()` *)
-    | RParen :: t -> (List [], RParen :: t)
-    (* Is it a function? *)
-    | Id "defun" :: t -> parse_functions t
-    | _ -> begin
-        let (atom, rest) = parse_atoms program in
-        let (expr, rest') = parse_list_content rest in
-        match expr with
-        (* If we got a list *)
-        | List l -> (List (atom :: l), rest')
-        | Function _ | Atom _ -> failwith "Expected to find a list"
-    end
-and parse_functions (program: Token.t list): expr * Token.t list = 
-    match program with
-    | Id i :: t -> 
-            let (args, rest) = parse_args_list t in
-            let (body, rest') = parse_atoms rest in 
-            (Function (i, args, body), rest')
-    | _ -> failwith "Expected to find an ID as function identifier."
-and parse_args_list (program: Token.t list): string list * Token.t list = 
-    match program with
-    | LParen :: t -> begin
-            let (args, rest) = parse_arg_list_content t in
-            match rest with
-            (* Delete the trailing parenthesis *)
-            | RParen :: t -> args, t
-            | _ -> failwith "Expected a closing parenthesis"
-    end
-    | _ -> failwith "Expected a list of arguments"
-and parse_arg_list_content (program: Token.t list): string list * Token.t list = 
-    match program with
-    (* No arguments *)
-    | RParen :: t -> ([], RParen :: t)
-    | _ ->
-        let (arg, rest) = parse_arg program in
-        let (arg_tail, rest') = parse_arg_list_content rest in
-        arg::arg_tail, rest'
-and parse_arg (program: Token.t list): string * Token.t list =
-    match program with
-    | Id i :: t -> (i, t)
-    | _ -> failwith "Unexpected token, expected an identifier"
-and parse_atoms (program: Token.t list): expr * Token.t list = 
-    match program with
-    | LParen :: _ -> parse_lists program
-    | Id i :: t -> (Atom (Id i), t)
-    | Literal l :: t -> begin
-        match l with
-        | Int i -> (Atom (Int i), t)
-        | Str s -> (Atom (Str s), t)
-        | Bool b -> (Atom (Bool b), t)
-    end
-    | _ -> failwith "Orphan closing parenthese `RPAREN`"
+type traversal = {
+    expr: expr;
+    t: Types.t;
+    subst: Types.subst;
+    rest: Token.t list;
+}
+
+let match_literals = function
+    | Token.Str s -> Literal (Str s)
+    | Token.Int i -> Literal (Int i)
+    | Token.Bool b -> Literal(Bool b)
 ;;
 
-let rec parse (program: Token.t list): ast =
-    let (expr, rest) = parse_atoms program in
+let type_literals = function
+    | Token.Str _ ->  Types.Str
+    | Token.Int _ -> Types.Int
+    | Token.Bool _ -> Types.Bool
+;;
+
+let rec parse_lambdas (program: Token.t list) (env: Types.env): traversal =
+    let (arg, rest) = parse_arg program in
+    let tv = Types.fresh_tv () in
+    let env' = Types.extend_env env arg tv in (* Maps the new type variable to the arg in a new context *)
+    let { expr = body; t; subst; rest = rest'; } = parse_lambda_body rest env' in 
+    {
+        expr = Abs (arg, body);
+        t = Types.Abs (Types.apply_subst subst tv, t);
+        subst;
+        rest = rest';
+    }
+
+and parse_arg program: string * Token.t list =
+    match program with
+    | Token.Id i :: t -> (i, t)
+    | _ -> failwith "Unexpected token, expected an identifier"
+
+and parse_lambda_body (program: Token.t list) (env: Types.env): traversal =
+    match program with
+    | Dot :: t -> parse_expr t env
+    | _ -> failwith "Expected lambda body definition (starting with a dot '.')"
+
+and parse_app (f: expr) (program: Token.t list) (env: Types.env): traversal =
+    match program with
+    (* Need to make sure that the first two cases receive the right environment *)
+    | Id x :: t -> parse_app (App (f, Var x)) t env
+    | Literal x :: t -> parse_app (App (f, match_literals x)) t env
+    | _ -> 
+        let { e } = f in
+
+and parse_expr (program: Token.t list) (env: Types.env): traversal =
+    match program with
+    | Id i :: t -> parse_app (Var i) t 
+    | Lambda :: t -> parse_lambdas t env
+    | Token.Literal l :: t -> 
+        {
+            expr = match_literals l;
+            t = type_literals l;
+            subst = Types.TypeMap.empty;
+            rest = t;
+        }  
+    (* Forgot the `in` clause. Need to parse it. *)
+    | Let :: Id i :: Assign :: t -> 
+        let { expr = body; t; subst; rest; } = parse_expr t in
+
+        {
+            expr = Abs (i, body);
+            t = ;
+            subst = ;
+            rest;
+        }
+        
+    | _ -> failwith "Token not recognized"
+;;
+
+let rec parse (program: Token.t list) =
+    let (expr, rest) = parse_expr program in
     match rest with
     | [] -> [expr]
     | l -> expr :: (parse l)
