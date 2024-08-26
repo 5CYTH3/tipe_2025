@@ -10,6 +10,8 @@ type t =
     | Dot
     | Assign
     | In
+    | LParen
+    | RParen
     | Id of string
     | Literal of literal
     [@@deriving show];;

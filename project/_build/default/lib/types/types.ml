@@ -14,7 +14,7 @@ module TypeMap = Map.Make(String);;
 
 type subst = t TypeMap.t;; (* // *)
 
-let rec apply_subst s t =
+let rec apply_subst (s: subst) (t: t) =
     match t with
     | TVar v -> begin
         match TypeMap.find_opt v s with
@@ -34,9 +34,9 @@ type env = t TypeMap.t;; (* String : Type *)
 
 let extend_env env k t = TypeMap.add k t env;; 
 
-let apply_env env k =
+let apply_env (env: env) k =
     try TypeMap.find k env
-    with Not_found -> failwith "Var not in scope : " ^ k
+    with Not_found -> failwith ("Var not in scope : " ^ k)
 ;;
 
 let rec free_tvs t: string list =

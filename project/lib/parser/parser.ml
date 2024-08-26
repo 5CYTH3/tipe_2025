@@ -59,13 +59,46 @@ and parse_lambda_body (program: Lexer.t) (env: Types.env): traversal =
     | Dot :: t -> parse_expr t env
     | _ -> failwith "Expected lambda body definition (starting with a dot '.')"
 
-(* TODO: Infer this function *)
-and parse_app (f: expr) (program: Lexer.t) (env: Types.env): traversal =
-    match program with
-    (* Need to make sure that the first two cases receive the right environment *)
-    | Id x :: t -> parse_app (App (f, Var x)) t env
-    | Literal x :: t -> parse_app (App (f, match_literals x)) t env
-    | _ -> (f, program)
+(* TODO: Infer this function, and for now it seems wrong *)
+and parse_app (f: traversal) (env: Types.env): traversal =
+    let { expr; t = t1; subst; rest; } = f in 
+    match rest with
+    (* WARNING: Need to make sure that the first two cases receive the right environment *)
+    | Id x :: t -> begin
+        let env' = Types.TypeMap.map (fun v -> Types.apply_subst subst v) env in
+
+        let t2 = Types.apply_env env' x in
+        let s2 = Types.TypeMap.empty in (* Because it's an id *)
+
+        let tv = Types.fresh_tv () in (* Create a TV for the RHS *)
+        let s3 = Types.unify (Types.apply_subst s2 t1) (Types.Abs (t2, tv)) in
+
+        let trav = { 
+            expr = App (expr, Var x); 
+            t = Types.apply_subst s3 tv; 
+            subst = Types.( *&* ) s3 (Types.( *&* ) s2 subst); 
+            rest = t; 
+        } in
+        parse_app trav env' 
+    end
+    | Literal x :: t -> begin
+        let t2 = type_literals x in
+        let s2 = Types.TypeMap.empty in 
+    
+        let tv = Types.fresh_tv () in (* Create a TV for the RHS *)
+        let s3 = Types.unify (Types.apply_subst s2 t1) (Types.Abs (t2, tv)) in
+
+        let trav = {
+            expr = App (expr, match_literals x); 
+            t = Types.apply_subst s3 tv; 
+            subst = Types.( *&* ) s3 (Types.( *&* ) s2 subst); 
+            rest = t; 
+        } in
+
+        parse_app trav env
+    end
+    | LParen :: _ -> parse_expr rest env (* That ain't the next thing *)
+    | _ -> f
 
 and parse_ins (program: Lexer.t) (env: Types.env): traversal =
     match program with
@@ -75,7 +108,7 @@ and parse_ins (program: Lexer.t) (env: Types.env): traversal =
 (* (expression, Token.t list) *)
 and parse_expr (program: Lexer.t) (env: Types.env): traversal =
     match program with
-    | Id i :: t -> parse_app (Var i) t env
+    | Id i :: t -> parse_app { } env (* not program but traversal *)
     | Lambda :: t -> parse_lambdas t env
     | Token.Literal l :: t -> 
         {
@@ -84,7 +117,12 @@ and parse_expr (program: Lexer.t) (env: Types.env): traversal =
             subst = Types.TypeMap.empty;
             rest = t;
         }  
-
+    | LParen :: t -> begin
+        let e = parse_expr t env in
+        match e.rest with
+        | RParen :: t' -> { expr = e.expr; t = e.t; subst = e.subst; rest = t'; }
+        | _ -> failwith "Unclosed parenthesis"
+    end
     | Let :: Id i :: Assign :: t -> 
         let { expr = body; t = t1; subst = subst1; rest; } = parse_expr t env in
         let env' = Types.TypeMap.map (fun v -> Types.apply_subst subst1 v) env in
@@ -99,7 +137,7 @@ and parse_expr (program: Lexer.t) (env: Types.env): traversal =
             subst = Types.( *&* ) subst2 subst1;
             rest = rest';
         }
-        
+    | RParen :: _ -> failwith "Alone RParen. ?"
     | _ -> failwith "Token not recognized"
 ;;
 

@@ -36,7 +36,7 @@ let type_literals = function
     | Token.Bool _ -> Types.Bool
 ;;
 
-let rec parse_lambdas (program: Token.t list) (env: Types.env): traversal =
+let rec parse_lambdas (program: Lexer.t) (env: Types.env): traversal =
     let (arg, rest) = parse_arg program in
     let tv = Types.fresh_tv () in
     let env' = Types.extend_env env arg tv in (* Maps the new type variable to the arg in a new context *)
@@ -49,32 +49,47 @@ let rec parse_lambdas (program: Token.t list) (env: Types.env): traversal =
         rest = rest';
     }
 
-and parse_arg program: string * Token.t list =
+and parse_arg (program: Lexer.t): string * Token.t list =
     match program with
     | Token.Id i :: t -> (i, t)
     | _ -> failwith "Unexpected token, expected an identifier"
 
-and parse_lambda_body (program: Token.t list) (env: Types.env): traversal =
+and parse_lambda_body (program: Lexer.t) (env: Types.env): traversal =
     match program with
     | Dot :: t -> parse_expr t env
     | _ -> failwith "Expected lambda body definition (starting with a dot '.')"
 
 (* TODO: Infer this function *)
-and parse_app (f: expr) (program: Token.t list) (env: Types.env): traversal =
-    match program with
-    (* Need to make sure that the first two cases receive the right environment *)
-    | Id x :: t -> parse_app (App (f, Var x)) t env
+and parse_app (f: traversal) (env: Types.env): traversal =
+    let { expr; t = t1; subst; rest; } = f in 
+    match rest with
+    (* WARNING: Need to make sure that the first two cases receive the right environment *)
+    | Id x :: t -> begin
+        let env' = Types.TypeMap.map (fun v -> Types.apply_subst subst v) env in
+        let t2 = Types.apply_env env' x in
+        let tv = Types.fresh_tv () in
+        let s3 = Types.unify (Types.apply_subst s2 t1) (Types.Abs (t2, tv)) in
+        let trav = { 
+            expr = App (expr, Var x); 
+            t = (Types.apply_subst s3 tv); 
+            subst = (Types.( *&* ) s3 (Types.( *&* ) s2 s1)); 
+            rest = t; 
+        } in
+        parse_app trav env' in 
+    end
     | Literal x :: t -> parse_app (App (f, match_literals x)) t env
-    | _ -> (f, program)
+    | LParen :: t -> f
+    | _ -> f
 
-
-and parse_ins (program: Token.t list) (env: Types.env): traversal =
+and parse_ins (program: Lexer.t) (env: Types.env): traversal =
     match program with
     | In :: t -> parse_expr t env
     | _ -> failwith "No 'in' clause given. "
-and parse_expr (program: Token.t list) (env: Types.env): traversal =
+
+(* (expression, Token.t list) *)
+and parse_expr (program: Lexer.t) (env: Types.env): traversal =
     match program with
-    | Id i :: t -> parse_app (Var i) t env
+    | Id i :: t -> parse_app t env (* not program but traversal *)
     | Lambda :: t -> parse_lambdas t env
     | Token.Literal l :: t -> 
         {
@@ -83,7 +98,12 @@ and parse_expr (program: Token.t list) (env: Types.env): traversal =
             subst = Types.TypeMap.empty;
             rest = t;
         }  
-
+    | LParen :: t -> begin
+        let e = parse_expr t env in
+        match e.rest with
+        | RParen :: t' -> { expr = e.expr; t = e.t; subst = t.subst; rest = t'; } in
+        | _ -> failwith "Unclosed parenthesis"
+    end
     | Let :: Id i :: Assign :: t -> 
         let { expr = body; t = t1; subst = subst1; rest; } = parse_expr t env in
         let env' = Types.TypeMap.map (fun v -> Types.apply_subst subst1 v) env in
@@ -95,15 +115,15 @@ and parse_expr (program: Token.t list) (env: Types.env): traversal =
         {
             expr = Let (i, body, in_expr);
             t = t2;
-            subst = Types.( *&* ) subst2  subst1;
+            subst = Types.( *&* ) subst2 subst1;
             rest = rest';
         }
-        
+    | RParen :: t -> failwith "Alone RParen. ?"
     | _ -> failwith "Token not recognized"
 ;;
 
 (* TODO: Adapt this function to display type *)
-let rec parse (program: Token.t list) (env: Types.env) =
+let rec parse (program: Lexer.t) (env: Types.env) =
     let { expr; t; subst; rest; } = parse_expr program env in
     match rest with
     | [] -> [(expr, t)]
