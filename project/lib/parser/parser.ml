@@ -55,12 +55,6 @@ let rec parse_expr (program: Lexer.t) (env: Types.env): traversal =
             rest = rest';
         }
     | Let :: _ -> parse_let program env
-    | LParen :: t -> begin
-        let e = parse_expr t env in
-        match e.rest with
-        | RParen :: t' -> { expr = e.expr; t = e.t; subst = e.subst; rest = t'; }
-        | _ -> failwith "Unclosed parenthesis"
-    end
     | _ -> parse_app program env
 and parse_let (program: Lexer.t) (env: Types.env): traversal =
     match program with
@@ -87,6 +81,17 @@ and parse_ins (program: Lexer.t) (env: Types.env): traversal =
     match program with
     | In :: t -> parse_expr t env
     | _ -> failwith "No 'in' clause given. "
+
+and parse_parenthesized (program: Lexer.t) (env: Types.env): traversal =
+    match program with
+    | LParen :: t -> begin
+        let e = parse_expr t env in
+        match e.rest with
+        | RParen :: t' -> { expr = e.expr; t = e.t; subst = e.subst; rest = t'; }
+        | _ -> failwith "Unclosed parenthesis"
+    end
+    | _ -> failwith "Expected LParen."
+
 
 and parse_app (program: Lexer.t) (env: Types.env): traversal = 
     let open Types in
@@ -133,6 +138,7 @@ and parse_term (program: Lexer.t) (env: Types.env): traversal =
             subst = Types.TypeMap.empty;
             rest = t;
         }  
+    | LParen :: _ -> parse_parenthesized program env
     | RParen :: _ -> failwith "Alone RParen. ?"
     | _ -> failwith "Unexpected token"
 ;;
