@@ -36,61 +36,94 @@ let type_literals = function
     | Token.Bool _ -> Types.Bool
 ;;
 
-let rec parse_lambdas (program: Lexer.t) (env: Types.env): traversal =
-    let (arg, rest) = parse_arg program in
+let fresh_id (id: string) (env: Types.env): Types.t * Types.env = 
     let tv = Types.fresh_tv () in
-    let env' = Types.extend_env env arg tv in (* Maps the new type variable to the arg in a new context *)
-    let { expr = body; t; subst; rest = rest'; } = parse_lambda_body rest env' in 
+    let env' = Types.extend_env env id tv in
+    (tv, env')
+;;
 
-    {
-        expr = Abs (arg, body);
-        t = Types.Abs (Types.apply_subst subst tv, t);
-        subst;
-        rest = rest';
-    }
-
-and parse_arg (program: Lexer.t): string * Token.t list =
+let rec parse_expr (program: Lexer.t) (env: Types.env): traversal =
     match program with
-    | Token.Id i :: t -> (i, t)
-    | _ -> failwith "Unexpected token, expected an identifier"
+    | Lambda :: Id arg :: Dot :: rest ->
+        let (tv, env') = fresh_id arg env in
+        let { expr = body; t; subst; rest = rest'; } = parse_expr rest env' in 
 
-and parse_lambda_body (program: Lexer.t) (env: Types.env): traversal =
+        {
+            expr = Abs (arg, body);
+            t = Types.Abs (Types.apply_subst subst tv, t);
+            subst;
+            rest = rest';
+        }
+    | Let :: _ -> parse_let program env
+    | _ -> parse_app program env
+and parse_let (program: Lexer.t) (env: Types.env): traversal =
     match program with
-    | Dot :: t -> parse_expr t env
-    | _ -> failwith "Expected lambda body definition (starting with a dot '.')"
+    | Let :: Id i :: Assign :: t -> 
+        let open Types in
+        let { expr = body; t = t1; subst = subst1; rest; } = parse_app t env in
 
-(* TODO: Infer this function *)
-and parse_app (f: traversal) (env: Types.env): traversal =
-    let { expr; t = t1; subst; rest; } = f in 
-    match rest with
-    (* WARNING: Need to make sure that the first two cases receive the right environment *)
-    | Id x :: t -> begin
-        let env' = Types.TypeMap.map (fun v -> Types.apply_subst subst v) env in
-        let t2 = Types.apply_env env' x in
-        let tv = Types.fresh_tv () in
-        let s3 = Types.unify (Types.apply_subst s2 t1) (Types.Abs (t2, tv)) in
-        let trav = { 
-            expr = App (expr, Var x); 
-            t = (Types.apply_subst s3 tv); 
-            subst = (Types.( *&* ) s3 (Types.( *&* ) s2 s1)); 
-            rest = t; 
-        } in
-        parse_app trav env' in 
-    end
-    | Literal x :: t -> parse_app (App (f, match_literals x)) t env
-    | LParen :: t -> f
-    | _ -> f
+        let env' = apply_subst_to_env subst1 env in
+
+        let t' = generalize (TypeMap.to_list env' (*weird*)) t1 in (* Get the type of the let def *)
+        let env'' = extend_env env' i t' in (* Add the typesig of the let-expr to the ctx *)
+
+        let { expr = in_expr; t = t2; subst = subst2; rest = rest'; } = parse_ins rest env'' in
+
+        {
+            expr = Let (i, body, in_expr);
+            t = t2;
+            subst = subst2 *&* subst1;
+            rest = rest';
+        }
+    | _ -> failwith "Expected `Let`."
 
 and parse_ins (program: Lexer.t) (env: Types.env): traversal =
     match program with
     | In :: t -> parse_expr t env
     | _ -> failwith "No 'in' clause given. "
 
+and parse_app (program: Lexer.t) (env: Types.env): traversal = 
+    let open Types in
+
+    let rec aux (lhs: traversal) = 
+        let { expr = lhs_expr; t = t1; rest; subst = s1; } = lhs in
+        let env' = apply_subst_to_env s1 env in 
+
+        match rest with
+        | [] -> lhs
+        | In :: _ -> lhs
+        | _ -> begin
+            let { expr = rhs_expr; t = t2; subst = s2; rest = rest'; } = parse_term rest env' in
+            
+            let tv = fresh_tv () in
+            
+            print_string (Types.show (apply_subst s2 t1));
+            print_string "\n";
+
+            let s3 = unify (apply_subst s2 t1) (Abs (t2, tv)) in
+
+            let res = {
+                expr = App (lhs_expr, rhs_expr);
+                t = apply_subst s3 tv; 
+                subst = s3 *&* s2 *&* s1;
+                rest = rest';
+            } in
+            aux res
+        end
+    in aux @@ parse_term program env
+
 (* (expression, Token.t list) *)
-and parse_expr (program: Lexer.t) (env: Types.env): traversal =
+and parse_term (program: Lexer.t) (env: Types.env): traversal =
     match program with
-    | Id i :: t -> parse_app t env (* not program but traversal *)
-    | Lambda :: t -> parse_lambdas t env
+    | Id x :: rest -> 
+        let t = Types.instantiate (Types.apply_env env x) in
+        print_string (Types.show t);
+        { 
+            expr = Var x; 
+            t;
+            subst = Types.TypeMap.empty; 
+            rest;
+        }
     | Token.Literal l :: t -> 
         {
             expr = match_literals l;
@@ -101,32 +134,17 @@ and parse_expr (program: Lexer.t) (env: Types.env): traversal =
     | LParen :: t -> begin
         let e = parse_expr t env in
         match e.rest with
-        | RParen :: t' -> { expr = e.expr; t = e.t; subst = t.subst; rest = t'; } in
+        | RParen :: t' -> { expr = e.expr; t = e.t; subst = e.subst; rest = t'; }
         | _ -> failwith "Unclosed parenthesis"
     end
-    | Let :: Id i :: Assign :: t -> 
-        let { expr = body; t = t1; subst = subst1; rest; } = parse_expr t env in
-        let env' = Types.TypeMap.map (fun v -> Types.apply_subst subst1 v) env in
-        let t' = Types.generalize (Types.TypeMap.to_list env') t1 in (* WARNING: Don't like the fact that we need to convert the type env to a list *)
-        let env'' = Types.extend_env env' i t' in
-
-        let { expr = in_expr; t = t2; subst = subst2; rest = rest'; } = parse_ins rest env'' in
-
-        {
-            expr = Let (i, body, in_expr);
-            t = t2;
-            subst = Types.( *&* ) subst2 subst1;
-            rest = rest';
-        }
-    | RParen :: t -> failwith "Alone RParen. ?"
-    | _ -> failwith "Token not recognized"
+    | RParen :: _ -> failwith "Alone RParen. ?"
+    | _ -> failwith "Unexpected token"
 ;;
 
-(* TODO: Adapt this function to display type *)
-let rec parse (program: Lexer.t) (env: Types.env) =
-    let { expr; t; subst; rest; } = parse_expr program env in
-    match rest with
-    | [] -> [(expr, t)]
-    | l -> (expr, t) :: (parse l env) (* WARNING: Env is not updated after the parsing of an expression, which is obviously wrong. *)
+let parse (program: Lexer.t) (env: Types.env) =
+    let { expr; t; subst; rest = _; } = parse_expr program env in
+    (* A lambda-calculus program is ONE expression (nested let-ins for declarations) *)
+    let env' = Types.apply_subst_to_env subst env in
+    (expr, t, env')
 ;;
 

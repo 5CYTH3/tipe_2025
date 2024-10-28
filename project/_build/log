@@ -1,9 +1,9 @@
-# dune build
+# dune exec tlp_tipe
 # OCAMLPARAM: unset
 # Shared cache: disabled
 # Shared cache location: /home/scythe/.cache/dune/db
 # Workspace root: /home/scythe/Code/tipe_2024/project
-# Auto-detected concurrency: 6
+# Auto-detected concurrency: 4
 # Dune context:
 #  { name = "default"
 #  ; kind = "default"
@@ -13,31 +13,11 @@
 #  ; build_dir = In_build_dir "default"
 #  ; instrument_with = []
 #  }
-$ /home/scythe/.opam/default/bin/ocamlc.opt -config > /tmp/dune_b98e32_output
-$ (cd _build/.sandbox/b40d495a75238f050c92a167251534b6/default && .ppx/0bb5094b13567c3c4e1ee33245b80e63/ppx.exe --cookie 'library-name="parser"' -o lib/parser/parser.pp.ml --impl lib/parser/parser.ml -corrected-suffix .ppx-corrected -diff-cmd - -dump-ast)
-> File "lib/parser/parser.ml", line 78, characters 28-30:
-> 78 |         parse_app trav env' in 
->                                  ^^
-> Error: Syntax error: "end" expected
-> File "lib/parser/parser.ml", line 67, characters 19-24:
-> 67 |     | Id x :: t -> begin
->                         ^^^^^
->   This "begin" might be unmatched
-[1]
-$ (cd _build/.sandbox/c2823749db7b9322fafe0410ea79ab5a/default && .ppx/0bb5094b13567c3c4e1ee33245b80e63/ppx.exe --cookie 'library-name="token"' -o lib/token/token.pp.ml --impl lib/token/token.ml -corrected-suffix .ppx-corrected -diff-cmd - -dump-ast)
-$ (cd _build/.sandbox/e2a9f1b7ca16db172157f4807e60a99f/default && .ppx/0bb5094b13567c3c4e1ee33245b80e63/ppx.exe --cookie 'library-name="types"' -o lib/types/types.pp.ml --impl lib/types/types.ml -corrected-suffix .ppx-corrected -diff-cmd - -dump-ast)
-$ (cd _build/default && /home/scythe/.opam/default/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -bin-annot-occurrences -I lib/token/.token.objs/byte -I /home/scythe/.opam/default/lib/ppx_deriving/runtime -no-alias-deps -opaque -o lib/token/.token.objs/byte/token.cmo -c -impl lib/token/token.pp.ml)
-$ (cd _build/default && /home/scythe/.opam/default/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -a -o lib/token/token.cma lib/token/.token.objs/byte/token.cmo)
-$ (cd _build/default && /home/scythe/.opam/default/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -bin-annot-occurrences -I lib/lexer/.lexer.objs/byte -I /home/scythe/.opam/default/lib/ppx_deriving/runtime -I lib/token/.token.objs/byte -no-alias-deps -opaque -o lib/lexer/.lexer.objs/byte/lexer.cmo -c -impl lib/lexer/lexer.ml)
-$ (cd _build/default && /home/scythe/.opam/default/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -bin-annot-occurrences -I lib/types/.types.objs/byte -I /home/scythe/.opam/default/lib/ppx_deriving/runtime -no-alias-deps -opaque -o lib/types/.types.objs/byte/types.cmo -c -impl lib/types/types.pp.ml)
-$ (cd _build/default && /home/scythe/.opam/default/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -a -o lib/lexer/lexer.cma lib/lexer/.lexer.objs/byte/lexer.cmo)
-$ (cd _build/default && /home/scythe/.opam/default/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -a -o lib/types/types.cma lib/types/.types.objs/byte/types.cmo)
-$ (cd _build/default && /home/scythe/.opam/default/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -I lib/lexer/.lexer.objs/byte -I lib/lexer/.lexer.objs/native -I /home/scythe/.opam/default/lib/ppx_deriving/runtime -I lib/token/.token.objs/byte -I lib/token/.token.objs/native -intf-suffix .ml -no-alias-deps -opaque -o lib/lexer/.lexer.objs/native/lexer.cmx -c -impl lib/lexer/lexer.ml)
-$ (cd _build/default && /home/scythe/.opam/default/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -I lib/token/.token.objs/byte -I lib/token/.token.objs/native -I /home/scythe/.opam/default/lib/ppx_deriving/runtime -intf-suffix .ml -no-alias-deps -opaque -o lib/token/.token.objs/native/token.cmx -c -impl lib/token/token.pp.ml)
-$ (cd _build/default && /home/scythe/.opam/default/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -I lib/types/.types.objs/byte -I lib/types/.types.objs/native -I /home/scythe/.opam/default/lib/ppx_deriving/runtime -intf-suffix .ml -no-alias-deps -opaque -o lib/types/.types.objs/native/types.cmx -c -impl lib/types/types.pp.ml)
-$ (cd _build/default && /home/scythe/.opam/default/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -a -o lib/lexer/lexer.cmxa lib/lexer/.lexer.objs/native/lexer.cmx)
-$ (cd _build/default && /home/scythe/.opam/default/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -a -o lib/token/token.cmxa lib/token/.token.objs/native/token.cmx)
-$ (cd _build/default && /home/scythe/.opam/default/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -a -o lib/types/types.cmxa lib/types/.types.objs/native/types.cmx)
-$ (cd _build/default && /home/scythe/.opam/default/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -shared -linkall -I lib/lexer -o lib/lexer/lexer.cmxs lib/lexer/lexer.cmxa)
-$ (cd _build/default && /home/scythe/.opam/default/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -shared -linkall -I lib/token -o lib/token/token.cmxs lib/token/token.cmxa)
-$ (cd _build/default && /home/scythe/.opam/default/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -shared -linkall -I lib/types -o lib/types/types.cmxs lib/types/types.cmxa)
+$ /home/scythe/.opam/default/bin/ocamlc.opt -config > /tmp/dune_b8f5e0_output
+$ (cd _build/.sandbox/970b644ef83770e53d9fb61590dc8967/default && .ppx/0bb5094b13567c3c4e1ee33245b80e63/ppx.exe --cookie 'library-name="parser"' -o lib/parser/parser.pp.ml --impl lib/parser/parser.ml -corrected-suffix .ppx-corrected -diff-cmd - -dump-ast)
+$ (cd _build/default && /home/scythe/.opam/default/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -I lib/parser/.parser.objs/byte -I /home/scythe/.opam/default/lib/ppx_deriving/runtime -I /home/scythe/.opam/default/lib/result -I lib/lexer/.lexer.objs/byte -I lib/token/.token.objs/byte -I lib/types/.types.objs/byte -no-alias-deps -opaque -o lib/parser/.parser.objs/byte/parser.cmo -c -impl lib/parser/parser.pp.ml)
+$ (cd _build/default && /home/scythe/.opam/default/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -I bin/.main.eobjs/byte -I /home/scythe/.opam/default/lib/ppx_deriving/runtime -I /home/scythe/.opam/default/lib/result -I lib/lexer/.lexer.objs/byte -I lib/parser/.parser.objs/byte -I lib/token/.token.objs/byte -I lib/types/.types.objs/byte -no-alias-deps -opaque -o bin/.main.eobjs/byte/dune__exe__Main.cmi -c -intf bin/main.pp.mli)
+$ (cd _build/default && /home/scythe/.opam/default/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -I bin/.main.eobjs/byte -I bin/.main.eobjs/native -I /home/scythe/.opam/default/lib/ppx_deriving/runtime -I /home/scythe/.opam/default/lib/result -I lib/lexer/.lexer.objs/byte -I lib/lexer/.lexer.objs/native -I lib/parser/.parser.objs/byte -I lib/parser/.parser.objs/native -I lib/token/.token.objs/byte -I lib/token/.token.objs/native -I lib/types/.types.objs/byte -I lib/types/.types.objs/native -intf-suffix .ml -no-alias-deps -opaque -o bin/.main.eobjs/native/dune__exe__Main.cmx -c -impl bin/main.pp.ml)
+$ (cd _build/default && /home/scythe/.opam/default/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -I lib/parser/.parser.objs/byte -I lib/parser/.parser.objs/native -I /home/scythe/.opam/default/lib/ppx_deriving/runtime -I /home/scythe/.opam/default/lib/result -I lib/lexer/.lexer.objs/byte -I lib/lexer/.lexer.objs/native -I lib/token/.token.objs/byte -I lib/token/.token.objs/native -I lib/types/.types.objs/byte -I lib/types/.types.objs/native -intf-suffix .ml -no-alias-deps -opaque -o lib/parser/.parser.objs/native/parser.cmx -c -impl lib/parser/parser.pp.ml)
+$ (cd _build/default && /home/scythe/.opam/default/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -a -o lib/parser/parser.cmxa lib/parser/.parser.objs/native/parser.cmx)
+$ (cd _build/default && /home/scythe/.opam/default/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -o bin/main.exe /home/scythe/.opam/default/lib/result/result.cmxa /home/scythe/.opam/default/lib/ppx_deriving/runtime/ppx_deriving_runtime.cmxa lib/token/token.cmxa lib/lexer/lexer.cmxa lib/types/types.cmxa lib/parser/parser.cmxa bin/.main.eobjs/native/dune__exe__Main.cmx)

@@ -6,13 +6,12 @@ My idea for this 'research article' was : what if we tried to combine the parsin
 If that is indeed possible (PoC in the `project` directory in OCaml), for which grammars ?
 
 ### Project details
-For the PoC, I will create a little RDP for the following lisp-like grammar, described using EBNF :
+For the PoC, I will create a little RDP for the following lambda-calculus grammar, described using EBNF :
 ```ebnf
 program = { expr }
-expr = list | atom | function
-list = '(' [{ expr }] ')'
-atom = id | literal
-literal = string | int | bool
-function = '(' 'defun' id '(' [{ id }] ')' expr ')'
+expr = literal | app | abs | let-binding
+literal = string | int | bool | id `@{self-explanatory}`
+app = id [{ expr }]
+abs = '\' id '.' expr
+let-binding = 'let' id '=' expr 'in' expr
 ```
-

@@ -10,14 +10,17 @@ type t =
     | Forall of string * t 
     [@@deriving show];;
 
-module TypeMap = Map.Make(String);; 
+module TypeMap = Map.Make(String)
 
-type subst = t TypeMap.t;; (* // *)
+let show_typemap tm =
+    "{\n" ^ (TypeMap.fold (fun k d acc -> (Printf.sprintf "  %s: %s\n" k (show d)) ^ acc ) tm "") ^ "}"
+
+type subst = t TypeMap.t (* // *)
 
 let rec apply_subst (s: subst) (t: t) =
     match t with
     | TVar v -> begin
-        match TypeMap.find_opt v s with
+        match TypeMap.find_opt v s with (* If type is not found, works like Id *)
         | Some x -> x
         | None -> t
     end
@@ -25,6 +28,8 @@ let rec apply_subst (s: subst) (t: t) =
     | Forall (v, t) -> Forall (v, apply_subst (TypeMap.remove v s) t)
     | t -> t
 ;;
+
+let apply_subst_to_env subst env = TypeMap.map (fun t -> apply_subst subst t) env;;
 
 let ( *&* ) s1 s2 =
     TypeMap.union (fun _ t _ -> Some t) (TypeMap.map (apply_subst s1) s2) s1
@@ -34,10 +39,11 @@ type env = t TypeMap.t;; (* String : Type *)
 
 let extend_env env k t = TypeMap.add k t env;; 
 
-let apply_env (env: env) k =
+let apply_env (env: env) k: t =
     try TypeMap.find k env
     with Not_found -> failwith ("Var not in scope : " ^ k)
 ;;
+
 
 let rec free_tvs t: string list =
     match t with

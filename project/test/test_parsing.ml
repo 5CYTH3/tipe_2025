@@ -1,6 +1,7 @@
+
+(*
 open Parser;;
 open Token;;
-
 let parser_testable = Alcotest.testable Parser.pp_expr (fun x y -> x = y) 
 
 (* TODO: Test individual values such as atoms *)
@@ -77,3 +78,4 @@ let () =
         "Lists", lists_suite;
         "Functions", function_suite
     ]
+*)
