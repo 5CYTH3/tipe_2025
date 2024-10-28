@@ -62,6 +62,7 @@ exception TypeError of string
 
 let rec unify t1 t2: subst =
     match t1, t2 with
+    | Bool, Bool | Int, Int | Str, Str -> TypeMap.empty
     | TVar v1, TVar v2 when v1 = v2 -> TypeMap.empty
     | TVar v, t | t, TVar v ->
         if List.mem v (free_tvs t) then

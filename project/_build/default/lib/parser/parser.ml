@@ -55,12 +55,18 @@ let rec parse_expr (program: Lexer.t) (env: Types.env): traversal =
             rest = rest';
         }
     | Let :: _ -> parse_let program env
+    | LParen :: t -> begin
+        let e = parse_expr t env in
+        match e.rest with
+        | RParen :: t' -> { expr = e.expr; t = e.t; subst = e.subst; rest = t'; }
+        | _ -> failwith "Unclosed parenthesis"
+    end
     | _ -> parse_app program env
 and parse_let (program: Lexer.t) (env: Types.env): traversal =
     match program with
     | Let :: Id i :: Assign :: t -> 
         let open Types in
-        let { expr = body; t = t1; subst = subst1; rest; } = parse_app t env in
+        let { expr = body; t = t1; subst = subst1; rest; } = parse_expr t env in
 
         let env' = apply_subst_to_env subst1 env in
 
@@ -91,15 +97,12 @@ and parse_app (program: Lexer.t) (env: Types.env): traversal =
 
         match rest with
         | [] -> lhs
-        | In :: _ -> lhs
+        | In :: _ | RParen :: _ -> lhs
         | _ -> begin
             let { expr = rhs_expr; t = t2; subst = s2; rest = rest'; } = parse_term rest env' in
             
             let tv = fresh_tv () in
             
-            print_string (Types.show (apply_subst s2 t1));
-            print_string "\n";
-
             let s3 = unify (apply_subst s2 t1) (Abs (t2, tv)) in
 
             let res = {
@@ -116,8 +119,7 @@ and parse_app (program: Lexer.t) (env: Types.env): traversal =
 and parse_term (program: Lexer.t) (env: Types.env): traversal =
     match program with
     | Id x :: rest -> 
-        let t = Types.instantiate (Types.apply_env env x) in
-        print_string (Types.show t);
+        let t = Types.instantiate (Types.apply_env env x) in (* WARNING: HUH ? *)
         { 
             expr = Var x; 
             t;
@@ -131,12 +133,6 @@ and parse_term (program: Lexer.t) (env: Types.env): traversal =
             subst = Types.TypeMap.empty;
             rest = t;
         }  
-    | LParen :: t -> begin
-        let e = parse_expr t env in
-        match e.rest with
-        | RParen :: t' -> { expr = e.expr; t = e.t; subst = e.subst; rest = t'; }
-        | _ -> failwith "Unclosed parenthesis"
-    end
     | RParen :: _ -> failwith "Alone RParen. ?"
     | _ -> failwith "Unexpected token"
 ;;
