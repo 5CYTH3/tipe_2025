@@ -61,13 +61,10 @@ and parse_let (program: Lexer.t) (env: Types.env): traversal =
     | Let :: Id i :: Assign :: t -> 
         let open Types in
         let { expr = body; t = t1; subst = subst1; rest; } = parse_expr t env in
+        let t' = generalize env (apply_subst subst1 t1) in (* Get the type of the let def *)
+        let env' = extend_env env i t' in (* Add the typesig of the let-expr to the ctx *)
 
-        let env' = apply_subst_to_env subst1 env in
-
-        let t' = generalize (TypeMap.to_list env' (*weird*)) t1 in (* Get the type of the let def *)
-        let env'' = extend_env env' i t' in (* Add the typesig of the let-expr to the ctx *)
-
-        let { expr = in_expr; t = t2; subst = subst2; rest = rest'; } = parse_ins rest env'' in
+        let { expr = in_expr; t = t2; subst = subst2; rest = rest'; } = parse_ins rest env' in
 
         {
             expr = Let (i, body, in_expr);
@@ -124,7 +121,7 @@ and parse_app (program: Lexer.t) (env: Types.env): traversal =
 and parse_term (program: Lexer.t) (env: Types.env): traversal =
     match program with
     | Id x :: rest -> 
-        let t = Types.instantiate (Types.apply_env env x) in (* WARNING: HUH ? *)
+        let t = Types.apply_env env x in 
         { 
             expr = Var x; 
             t;

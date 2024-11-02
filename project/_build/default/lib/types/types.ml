@@ -44,18 +44,22 @@ let apply_env (env: env) k: t =
     with Not_found -> failwith ("Var not in scope : " ^ k)
 ;;
 
+module Ftv = Set.Make (String);;
 
-let rec free_tvs t: string list =
+type ftvs = Ftv.t
+
+
+let rec free_tvs t: ftvs =
     match t with
-    | TVar v -> [v]
-    | Abs (t1, t2) -> List.append (free_tvs t1) (free_tvs t2)
-    | Forall (v, t) -> List.filter (fun x -> x <> v) (free_tvs t)
-    | _ -> [] 
+    | Int | Bool | Str -> Ftv.empty
+    | TVar v -> Ftv.singleton v
+    | Abs (t1, t2) -> Ftv.union (free_tvs t1) (free_tvs t2)
+    | Forall (v, t) -> Ftv.remove v (free_tvs t)
 ;;
 
 (* For now, returns a list but I don't like it. *)
 let free_tvs_env env =
-    List.flatten (List.map (fun (_, t) -> free_tvs t) env)
+    TypeMap.fold (fun _ t acc -> Ftv.union (free_tvs t) acc) env Ftv.empty
 ;;
 
 exception TypeError of string
@@ -65,7 +69,7 @@ let rec unify t1 t2: subst =
     | Bool, Bool | Int, Int | Str, Str -> TypeMap.empty
     | TVar v1, TVar v2 when v1 = v2 -> TypeMap.empty
     | TVar v, t | t, TVar v ->
-        if List.mem v (free_tvs t) then
+        if Ftv.mem v (free_tvs t) then
             raise (TypeError ("Occurs check failed for variable " ^ v))
         else
             TypeMap.singleton v t
@@ -81,9 +85,11 @@ let rec unify t1 t2: subst =
 
 let generalize env t =
     let env_fv = free_tvs_env env in
-    let t_fv = free_tvs t in
-    let vars_to_generalize = List.filter (fun v -> not (List.mem v env_fv)) t_fv in
-    List.fold_right (fun v t -> Forall (v, t)) vars_to_generalize t
+    let ftvs_of_t = free_tvs t in
+    let vars_to_generalize = Ftv.filter (fun v -> not (Ftv.mem v env_fv)) ftvs_of_t in
+    match Ftv.elements vars_to_generalize with
+    | [] -> t
+    | vars -> List.fold_right (fun v acc -> Forall (v, acc)) vars t
 ;;
 
 let fresh_tv =
@@ -96,9 +102,7 @@ let fresh_tv =
 
 let rec instantiate t =
     match t with
-    | Forall (v, t) ->
-        let fresh_var = fresh_tv () in
-        apply_subst (TypeMap.singleton v fresh_var) (instantiate t)
+    | Forall (v, t) -> let fresh_var = fresh_tv () in instantiate (apply_subst (TypeMap.singleton v fresh_var) t)
     | _ -> t
 ;;
 

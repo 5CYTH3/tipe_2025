@@ -29,12 +29,17 @@ let () =
         LParen; Lambda; Id "x"; Dot; Id "+"; Id "x"; Literal (Int 1); RParen; Literal (Int 4);
     ] ctx
     *)
+    (*
     Parser.parse [
         Let; Id "add"; Assign; 
             Lambda; Id "x"; Dot;
             Lambda; Id "y"; Dot;
             Id "+"; Id "x"; Id "y";
         In; Id "add"; Literal (Int 4); Literal (Int 3);
+    ] ctx
+    *)
+    Parser.parse [
+        Let; Id "id"; Assign; Lambda; Id "x"; Dot; Id "x"; In; Id "id"
     ] ctx
     |> (fun (e, t, ctx) -> begin
         Printf.printf "CTX: %s\nTYPE: %s\nEXPR:\n%s\n\n"
