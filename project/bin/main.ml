@@ -2,6 +2,7 @@ open Token;;
 
 let ctx = Types.TypeMap.of_list [
     "+", Types.Abs (Types.Int, Types.Abs (Types.Int, Types.Int)); 
+    "y", Types.Int
     (* App is left-assoc but TAbs is right-assoc *)
 ]
 
@@ -38,8 +39,13 @@ let () =
         In; Id "add"; Literal (Int 4); Literal (Int 3);
     ] ctx
     *)
+    (*
     Parser.parse [
         Let; Id "id"; Assign; Lambda; Id "x"; Dot; Id "x"; In; Id "id"
+    ] ctx
+    *)
+    Parser.parse [
+        LParen; Lambda; Id "x"; Dot; Id "x"; RParen; Id "y"
     ] ctx
     |> (fun (e, t, ctx) -> begin
         Printf.printf "CTX: %s\nTYPE: %s\nEXPR:\n%s\n\n"

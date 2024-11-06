@@ -5,10 +5,22 @@ type t =
     | Int
     | TVar of string
     (* Function *)
-    | Abs of t * t
+    | Abs of t * t (* @-> *)
     (* Scheme *)
     | Forall of string * t 
     [@@deriving show];;
+
+let ( @-> ) t1 t2 = Abs (t1, t2)
+
+let counter = ref 0;;
+
+let fresh_tv () =
+    let v = "t" ^ string_of_int !counter in
+    incr counter;
+    TVar v
+;;
+
+let reset_tv_counter () = counter := 0;;
 
 module TypeMap = Map.Make(String)
 
@@ -91,15 +103,6 @@ let generalize env t =
     | [] -> t
     | vars -> List.fold_right (fun v acc -> Forall (v, acc)) vars t
 ;;
-
-let fresh_tv =
-  let counter = ref 0 in
-  fun () ->
-    let v = "t" ^ string_of_int !counter in
-    incr counter;
-    TVar v
-;;
-
 let rec instantiate t =
     match t with
     | Forall (v, t) -> let fresh_var = fresh_tv () in instantiate (apply_subst (TypeMap.singleton v fresh_var) t)

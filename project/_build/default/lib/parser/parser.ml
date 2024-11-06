@@ -141,6 +141,7 @@ and parse_term (program: Lexer.t) (env: Types.env): traversal =
 ;;
 
 let parse (program: Lexer.t) (env: Types.env) =
+    Types.reset_tv_counter ();
     let { expr; t; subst; rest = _; } = parse_expr program env in
     (* A lambda-calculus program is ONE expression (nested let-ins for declarations) *)
     let env' = Types.apply_subst_to_env subst env in
