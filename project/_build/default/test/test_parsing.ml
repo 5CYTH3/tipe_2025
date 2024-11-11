@@ -1,79 +1,89 @@
-open Parser;;
-open Token;;
+open Types
+open Token
+open Parser
 
-let parser_testable = Alcotest.testable Parser.pp_expr (fun x y -> x = y) 
+let testable_expr = Alcotest.testable Parser.pp_expr ( = );;
+let testable_type = Alcotest.testable Types.pp ( = );; let testable = Alcotest.pair testable_expr testable_type;;
 
-(* TODO: Test individual values such as atoms *)
-
-(* Template for testing lists used in specialized tests *)
-let mock_test_parsing_lists p expected =
-    let got = parse p in
-    Alcotest.(check (Alcotest.list parser_testable)) "same lists" got expected
+let mock_test (expected_expr, expected_type) (lexer, ctx) =
+    let expr, t, _ = Parser.parse lexer ctx in
+    Alcotest.check testable "same pair" (expected_expr, expected_type) (expr, t)
 ;;
 
-(* Only test lists of atomic ints   *)
-(* It here tests the sequence `(0)` *)
-let test_int_list () = 
-    mock_test_parsing_lists
-        [LParen; Literal (Int 0); RParen]
-        [Parser.List [Atom (Int 0)]]
+let test_2vars_1ret () = 
+    mock_test
+        (Abs ("x", Abs ("y", Var "x")), TVar "t0" @-> TVar "t1" @-> TVar "t0")
+        ([ Lambda; Id "x"; Dot; Lambda; Id "y"; Dot; Id "x" ], TypeMap.empty)
 ;;
 
-(* Only test lists of any type of atoms               *)
-(* It here tests the sequence `(0 "Hello"  true add)` *)
-let test_any_list () =
-    mock_test_parsing_lists
-        [LParen; Literal (Int 0); Literal (Str "Hello"); Literal (Bool true); Id "add"; RParen]
-        [List [Atom (Int 0); Atom (Str "Hello"); Atom (Bool true); Atom (Id "add")]]
+let test_3vars_1ret () =
+    mock_test 
+        (Abs ("x", Abs ("y", Abs("z", Var "y"))), TVar "t0" @-> TVar "t1" @-> TVar "t2" @-> TVar "t1")
+        ([ Lambda; Id "x"; Dot; Lambda; Id "y"; Dot; Lambda; Id "z"; Dot; Id "y" ], TypeMap.empty)
+
+let lambda_exprs = [
+    Alcotest.test_case "Nested Lambda Abs 1" `Quick test_2vars_1ret;
+    Alcotest.test_case "Nested Lambda Abs 2" `Quick test_3vars_1ret;
+]
+
+let test_fun_app_1 () =
+    mock_test
+        (App (Abs ("x", Var "x"), Literal (Int 1)), Int)
+        ([ LParen; Lambda; Id "x"; Dot; Id "x"; RParen; Literal (Int 1) ], TypeMap.empty)
 ;;
 
+let test_fun_app_2 () =
+    mock_test
+        (App (Abs ("x", Abs ("y", Var "x")), Literal (Int 1)), TVar "t1" @-> Int)
+        ([ LParen; Lambda; Id "x"; Dot; Lambda; Id "y"; Dot; Id "x"; RParen; Literal (Int 1) ], TypeMap.empty)
 
-(* Test list of atoms and lists                        *)
-(* It here tests the sequence `((4 1) ("Hello") true)` *)
-let test_list_of_lists () =
-    mock_test_parsing_lists 
-    [LParen; LParen; Literal (Int 4); Literal (Int 1); RParen; LParen; Literal (Str "Hello"); RParen; Literal (Bool true); RParen]
-    [List [List [Atom (Int 4); Atom (Int 1)]; List [Atom (Str "Hello")]; Atom (Bool true)]]
-;;
-
-let lists_suite = [
-    Alcotest.test_case "List of ints" `Quick test_int_list;
-    Alcotest.test_case "List of any type" `Quick test_any_list; 
-    Alcotest.test_case "List of lists and any" `Quick test_list_of_lists;
+let function_application = [
+    Alcotest.test_case "ID Function" `Quick test_fun_app_1;
+    Alcotest.test_case "ID Function" `Quick test_fun_app_2;
 ]
 
 
-(* Test functions that have no parameters *)
-(* Tested sequence : (defun x () 3) *)
-let test_no_args_fn () =
-    let got = parse [LParen; Id "defun"; Id "x"; LParen; RParen; Literal (Int 3); RParen] in
-    Alcotest.(check (Alcotest.list parser_testable)) "same lists" got [Function ("x", [], Atom (Int 3))]
+let test_id_let () = 
+    mock_test
+        (Let ("id", Abs ("x", Var "x"), Var "id"), Forall ("t0", Abs(TVar "t0", TVar "t0")))
+        (
+            [Token.Let; Id "id"; Assign; Lambda; Id "x"; Dot; Id "x"; In; Id "id"],
+            TypeMap.empty
+        )
 ;;
 
-(* Test functions that have arguments *)
-(* Tested sequence : (defun x (y z) z) *)
-let test_args_fn () =
-    let got = parse [LParen; Id "defun"; Id "x"; LParen; Id "y"; Id "z"; RParen; Id "z"; RParen] in
-    Alcotest.(check (Alcotest.list parser_testable)) "same lists" got [Function ("x", ["y"; "z"], Atom (Id "z"))];;
+let test_add_let () =
+    mock_test
+        (
+            Let ("add", 
+                Abs ("x", 
+                    Abs ("y", 
+                        App (App (Var "+", Var "x"), Var "y"))),
+                Var "add"),
+            (Types.Abs (Int, Abs (Int, Int)))
+        )
+        (
+            [Token.Let; Id "add"; Assign;
+                    Lambda; Id "x"; Dot;
+                    Lambda; Id "y"; Dot;
+                    Id "+"; Id "x"; Id "y";
+                In; Id "add";
+            ],
+            TypeMap.of_list [ ("+", Types.Abs (Int, Abs (Int, Int))) ]
+        )
 
-(* Test function that got a function definition in its body *)
-(* (defun x () (defun y () 3)) *)
-let test_nested_fn () = 
-    let got = parse [LParen; Id "defun"; Id "x"; LParen; RParen; LParen; Id "defun"; Id "y"; LParen; RParen; Literal (Int 3); RParen; RParen] in
-    Alcotest.(check (Alcotest.list parser_testable)) "same lists" got [Function ("x", [], Function ("y", [], Atom (Int 3)))]
-;;
+
+let let_bindings_suite = [
+    Alcotest.test_case "ID Function" `Quick test_id_let;
+    Alcotest.test_case "Add function" `Quick test_add_let;
+] 
 
 
-
-let function_suite = [
-    Alcotest.test_case "Function with no argument" `Quick test_no_args_fn;
-    Alcotest.test_case "Function with arguments" `Quick test_args_fn;
-    Alcotest.test_case "Two nested functions" `Quick test_nested_fn;
-]
 
 let () =
     Alcotest.run "Parser" 
     [ 
-        "Lists", lists_suite;
-        "Functions", function_suite
+        "Lambda Expressions", lambda_exprs;
+        "Function Application", function_application;
+        "Let Bindings", let_bindings_suite;
     ]

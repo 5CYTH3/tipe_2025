@@ -5,6 +5,11 @@ type literal =
     [@@deriving show];;
 
 type t =
+    | Let
+    | Lambda
+    | Dot
+    | Assign
+    | In
     | LParen
     | RParen
     | Id of string
