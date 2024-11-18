@@ -7,11 +7,11 @@ on:
 permissions: read-all
 
 jobs:
-  build:
-    strategy:
-      fail-fast: false
-    runs-on:
-      - ubuntu-latest
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./project
     steps:
       - name: Checkout tree
         uses: actions/checkout@v4
