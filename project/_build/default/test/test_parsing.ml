@@ -20,6 +20,7 @@ let test_3vars_1ret () =
     mock_test 
         (Abs ("x", Abs ("y", Abs("z", Var "y"))), TVar "t0" @-> TVar "t1" @-> TVar "t2" @-> TVar "t1")
         ([ Lambda; Id "x"; Dot; Lambda; Id "y"; Dot; Lambda; Id "z"; Dot; Id "y" ], TypeMap.empty)
+;;
 
 let lambda_exprs = [
     Alcotest.test_case "Nested Lambda Abs 1" `Quick test_2vars_1ret;
@@ -36,6 +37,10 @@ let test_fun_app_2 () =
     mock_test
         (App (Abs ("x", Abs ("y", Var "x")), Literal (Int 1)), TVar "t1" @-> Int)
         ([ LParen; Lambda; Id "x"; Dot; Lambda; Id "y"; Dot; Id "x"; RParen; Literal (Int 1) ], TypeMap.empty)
+;;
+
+let test_fun_app_3 () =
+    ()
 
 let function_application = [
     Alcotest.test_case "ID Function" `Quick test_fun_app_1;
