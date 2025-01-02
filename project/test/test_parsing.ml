@@ -39,9 +39,6 @@ let test_fun_app_2 () =
         ([ LParen; Lambda; Id "x"; Dot; Lambda; Id "y"; Dot; Id "x"; RParen; Literal (Int 1) ], TypeMap.empty)
 ;;
 
-let test_fun_app_3 () =
-    ()
-
 let function_application = [
     Alcotest.test_case "ID Function" `Quick test_fun_app_1;
     Alcotest.test_case "ID Function" `Quick test_fun_app_2;
