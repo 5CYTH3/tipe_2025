@@ -75,8 +75,7 @@ and parse_app (program: program): traversal =
         let { expr = lhs_expr; rest; } = lhs in
 
         match rest with
-        | [] -> lhs
-        | In :: _ | RParen :: _ -> lhs
+        | [] | In :: _ | RParen :: _ -> lhs
         | _ -> begin
             let { expr = rhs_expr; rest = rest'; } = parse_term rest in
             
@@ -86,7 +85,9 @@ and parse_app (program: program): traversal =
             } in
             aux res
         end
-    in aux @@ parse_term program
+    in 
+    let initial = parse_term program in
+    aux initial
 
 (* (expression, Token.t list) *)
 and parse_term (program: program): traversal =

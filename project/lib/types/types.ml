@@ -135,7 +135,8 @@ let rec infer_types env e: t * subst =
         let (t', s2) = infer_types (apply_subst_to_env s1 env) e2 in
         let tv = fresh_tv () in
         let s3 = unify (apply_subst s2 t) (t' @-> tv) in
-        (apply_subst s3 tv, s3 *&* s2 *&* s1)
+        let f_subst = s3 *&* s2 *&* s1 in
+        (apply_subst f_subst tv, f_subst)
     | Let (x, e1, e2) ->
         let (t, s1) = infer_types env e1 in
         let t' = generalize env (apply_subst s1 t) in
