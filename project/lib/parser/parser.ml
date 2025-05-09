@@ -42,7 +42,7 @@ let fresh_id (id: string) (env: Types.env): Types.t * Types.env =
     (tv, env')
 ;;
 
-let rec parse_expr (program: Lexer.t) (env: Types.env): traversal =
+let rec parse_expr (program: Token.t list) (env: Types.env): traversal =
     match program with
     | Lambda :: Id arg :: Dot :: rest ->
         let (tv, env') = fresh_id arg env in
@@ -56,7 +56,7 @@ let rec parse_expr (program: Lexer.t) (env: Types.env): traversal =
         }
     | Let :: _ -> parse_let program env
     | _ -> parse_app program env
-and parse_let (program: Lexer.t) (env: Types.env): traversal =
+and parse_let (program: Token.t list) (env: Types.env): traversal =
     match program with
     | Let :: Id i :: Assign :: t -> 
         let open Types in
@@ -74,12 +74,12 @@ and parse_let (program: Lexer.t) (env: Types.env): traversal =
         }
     | _ -> failwith "Expected `Let`."
 
-and parse_ins (program: Lexer.t) (env: Types.env): traversal =
+and parse_ins (program: Token.t list) (env: Types.env): traversal =
     match program with
     | In :: t -> parse_expr t env
     | _ -> failwith "No 'in' clause given. "
 
-and parse_parenthesized (program: Lexer.t) (env: Types.env): traversal =
+and parse_parenthesized (program: Token.t list) (env: Types.env): traversal =
     match program with
     | LParen :: t -> begin
         let e = parse_expr t env in
@@ -90,7 +90,7 @@ and parse_parenthesized (program: Lexer.t) (env: Types.env): traversal =
     | _ -> failwith "Expected LParen."
 
 
-and parse_app (program: Lexer.t) (env: Types.env): traversal = 
+and parse_app (program: Token.t list) (env: Types.env): traversal = 
     let open Types in
 
     let rec aux (lhs: traversal) = 
@@ -118,7 +118,7 @@ and parse_app (program: Lexer.t) (env: Types.env): traversal =
     in aux @@ parse_term program env
 
 (* (expression, Token.t list) *)
-and parse_term (program: Lexer.t) (env: Types.env): traversal =
+and parse_term (program: Token.t list) (env: Types.env): traversal =
     match program with
     | Id x :: rest -> 
         let t = Types.apply_env env x in 
@@ -140,7 +140,7 @@ and parse_term (program: Lexer.t) (env: Types.env): traversal =
     | _ -> failwith "Unexpected token"
 ;;
 
-let parse (program: Lexer.t) (env: Types.env) =
+let parse (program: Token.t list) (env: Types.env) =
     Types.reset_tv_counter ();
     let { expr; t; subst; rest = _; } = parse_expr program env in
     (* A lambda-calculus program is ONE expression (nested let-ins for declarations) *)

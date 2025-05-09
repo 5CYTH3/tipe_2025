@@ -16,3 +16,5 @@ type t =
     | Literal of literal
     [@@deriving show];;
 
+type ast = t list
+[@@deriving show];;

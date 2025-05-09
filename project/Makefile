@@ -1,2 +1,2 @@
 all:
-	dune exec tlp_tipe
+	dune build && ./_build/install/default/bin/tlp_tipe

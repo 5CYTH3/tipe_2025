@@ -1,10 +1,9 @@
-(*
+
 let ctx = Types.TypeMap.of_list [
     "+", Types.Abs (Types.Int, Types.Abs (Types.Int, Types.Int)); 
     "y", Types.Int
     (* App is left-assoc but TAbs is right-assoc *)
 ]
-*)
 
 
 let from_file f =
@@ -13,11 +12,11 @@ let from_file f =
     let lexer = Lexer.collect_tokens lexbuf [] in
     (* print_string @@ Parser.show_program lexer; *)
     let start = Sys.time () in
-    let (t, _) = Parser.parse lexer |> Types.infer_types Types.TypeMap.empty in
+    let result = Parser.parse lexer ctx in
     let stop = Sys.time () in
     let elapsed = stop -. start in
     print_float elapsed;
-    t
+    result
 ;;
 
 (*
