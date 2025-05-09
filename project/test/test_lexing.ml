@@ -1,3 +1,5 @@
+(* Whoops, no lexer here *)
+
 let testable_ast = Alcotest.testable Token.pp_ast ( = );;
 
 let mock_test expected_ast stream =
