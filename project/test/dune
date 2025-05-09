@@ -1,5 +1,4 @@
 (test
- (name test_parsing)
- (modules test_parsing)
+ (name test_parsing test_lexing)
  (libraries token parser types alcotest))
 

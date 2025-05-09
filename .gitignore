@@ -1,2 +1,2 @@
-_build/
+project/_build/*
 *.pdf
