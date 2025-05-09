@@ -1,0 +1,95 @@
+(lang dune 3.15)
+(name tlp_tipe)
+(sections (lib .) (libexec .) (bin ../../bin))
+(files
+ (lib
+  (META
+   dune-package
+   lexer/lexer.a
+   lexer/lexer.cma
+   lexer/lexer.cmi
+   lexer/lexer.cmt
+   lexer/lexer.cmx
+   lexer/lexer.cmxa
+   lexer/lexer.ml
+   opam
+   parser/parser.a
+   parser/parser.cma
+   parser/parser.cmi
+   parser/parser.cmt
+   parser/parser.cmx
+   parser/parser.cmxa
+   parser/parser.ml
+   token/token.a
+   token/token.cma
+   token/token.cmi
+   token/token.cmt
+   token/token.cmx
+   token/token.cmxa
+   token/token.ml
+   types/types.a
+   types/types.cma
+   types/types.cmi
+   types/types.cmt
+   types/types.cmx
+   types/types.cmxa
+   types/types.ml))
+ (libexec
+  (lexer/lexer.cmxs parser/parser.cmxs token/token.cmxs types/types.cmxs))
+ (bin (tlp_tipe)))
+(library
+ (name tlp_tipe.lexer)
+ (kind normal)
+ (archives (byte lexer/lexer.cma) (native lexer/lexer.cmxa))
+ (plugins (byte lexer/lexer.cma) (native lexer/lexer.cmxs))
+ (native_archives lexer/lexer.a)
+ (requires tlp_tipe.token)
+ (main_module_name Lexer)
+ (modes byte native)
+ (modules
+  (singleton
+   (obj_name lexer)
+   (visibility public)
+   (source (path Lexer) (impl (path lexer/lexer.ml))))))
+(library
+ (name tlp_tipe.parser)
+ (kind normal)
+ (archives (byte parser/parser.cma) (native parser/parser.cmxa))
+ (plugins (byte parser/parser.cma) (native parser/parser.cmxs))
+ (native_archives parser/parser.a)
+ (requires tlp_tipe.lexer tlp_tipe.types ppx_deriving.runtime)
+ (main_module_name Parser)
+ (modes byte native)
+ (modules
+  (singleton
+   (obj_name parser)
+   (visibility public)
+   (source (path Parser) (impl (path parser/parser.ml))))))
+(library
+ (name tlp_tipe.token)
+ (kind normal)
+ (archives (byte token/token.cma) (native token/token.cmxa))
+ (plugins (byte token/token.cma) (native token/token.cmxs))
+ (native_archives token/token.a)
+ (requires ppx_deriving.runtime)
+ (main_module_name Token)
+ (modes byte native)
+ (modules
+  (singleton
+   (obj_name token)
+   (visibility public)
+   (source (path Token) (impl (path token/token.ml))))))
+(library
+ (name tlp_tipe.types)
+ (kind normal)
+ (archives (byte types/types.cma) (native types/types.cmxa))
+ (plugins (byte types/types.cma) (native types/types.cmxs))
+ (native_archives types/types.a)
+ (requires ppx_deriving.runtime)
+ (main_module_name Types)
+ (modes byte native)
+ (modules
+  (singleton
+   (obj_name types)
+   (visibility public)
+   (source (path Types) (impl (path types/types.ml))))))

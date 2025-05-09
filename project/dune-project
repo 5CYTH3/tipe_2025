@@ -1,0 +1,26 @@
+(lang dune 3.15)
+
+(name tlp_tipe)
+
+(generate_opam_files true)
+
+(source
+ (github 5CYTH3/tlp_tipe))
+
+(authors "5CYTH3 (Enogad)")
+
+(maintainers "Maintainer Name")
+
+(license LICENSE)
+
+(documentation https://url/to/documentation)
+
+(package
+ (name tlp_tipe)
+ (synopsis "A little Typed LR Parser")
+ (description "A little Typed LR(1) Parser project for my TIPE 2025, aiming to combine the steps of type inference/type checking and parsing")
+ (depends ocaml dune alcotest ppx_deriving)
+ (tags
+  (topics "parser" your project)))
+
+; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project
