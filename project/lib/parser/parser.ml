@@ -93,30 +93,28 @@ and parse_parenthesized (program: Token.t list) (env: Types.env): traversal =
 and parse_app (program: Token.t list) (env: Types.env): traversal = 
     let open Types in
 
+    (* WARNING: I bet this is hideous complexity-wise *)
     let rec aux (lhs: traversal) = 
         let { expr = lhs_expr; t = t1; rest; subst = s1; } = lhs in
-        let env' = apply_subst_to_env s1 env in 
-
         match rest with
-        | [] -> lhs
-        | In :: _ | RParen :: _ -> lhs
+        | [] | In :: _ | RParen :: _ -> lhs
         | _ -> begin
-            let { expr = rhs_expr; t = t2; subst = s2; rest = rest'; } = parse_term rest env' in
-            
+            let { expr = rhs_expr; t = t2; subst = s2; rest = rest'; } = parse_term rest env in
             let tv = fresh_tv () in
-            
-            let s3 = unify (apply_subst s2 t1) (Abs (t2, tv)) in
+            let s3 = unify (apply_subst s2 t1) (Abs (t2, tv)) in (* VERY HEAVY *)
+            let f_subst = s3 *&* s2 *&* s1 in
 
             let res = {
                 expr = App (lhs_expr, rhs_expr);
-                t = apply_subst s3 tv; 
-                subst = s3 *&* s2 *&* s1;
+                t = apply_subst f_subst tv; 
+                subst = f_subst;
                 rest = rest';
             } in
             aux res
         end
-    in aux @@ parse_term program env
-
+    in 
+    let initial = parse_term program env in
+    aux initial
 (* (expression, Token.t list) *)
 and parse_term (program: Token.t list) (env: Types.env): traversal =
     match program with

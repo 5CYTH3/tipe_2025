@@ -1,4 +1,4 @@
-# dune build
+# dune exec tlp_tipe
 # OCAMLPARAM: unset
 # Shared cache: disabled
 # Shared cache location: /home/scythe/.cache/dune/db
@@ -13,4 +13,4 @@
 #  ; build_dir = In_build_dir "default"
 #  ; instrument_with = []
 #  }
-$ /home/scythe/.opam/default/bin/ocamlc.opt -config > /tmp/dune_b2ce99_output
+$ /home/scythe/.opam/default/bin/ocamlc.opt -config > /tmp/dune_9f9bbd_output
