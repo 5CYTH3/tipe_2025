@@ -3,7 +3,8 @@ open Token
 open Parser
 
 let testable_expr = Alcotest.testable Parser.pp_expr ( = );;
-let testable_type = Alcotest.testable Types.pp ( = );; let testable = Alcotest.pair testable_expr testable_type;;
+let testable_type = Alcotest.testable Types.pp ( = );; 
+let testable = Alcotest.pair testable_expr testable_type;;
 
 let mock_test (expected_expr, expected_type) (lexer, ctx) =
     let expr, t, _ = Parser.parse lexer ctx in
