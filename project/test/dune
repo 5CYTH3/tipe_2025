@@ -1,0 +1,4 @@
+(tests
+ (names test_parsing test_lexing test_typing)
+ (libraries token parser types alcotest))
+

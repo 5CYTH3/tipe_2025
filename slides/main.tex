@@ -1,0 +1,240 @@
+%! TeX TXS-program:compile = txs:///pdflatex/[--shell-escape]
+\documentclass{beamer}
+\usetheme{Berkeley}
+
+\definecolor{UBCblue}{RGB}{25,25,112} % UBC Blue (primary)
+\usecolortheme[named=UBCblue]{structure}
+
+\usepackage{ebproof}
+\usepackage{forest}
+\usepackage{simplebnf}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tikz}
+
+\usetikzlibrary{automata, arrows.meta, positioning, trees}
+
+\graphicspath{ {res/} }
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle, basicstyle=\tiny}
+
+
+\setbeamertemplate{footline}[frame number]
+
+\title{Ponts analyse syntaxique-sémantique}
+\author{Enogad Le Biavant--Frederic}
+\institute{Alain René Lesage MP2I}
+\date{2024}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\section{Présentation générale}
+\begin{frame}
+		\frametitle{L'idée}
+		Karm, 2022
+		\begin{center}
+				\includegraphics[scale=0.25]{repo}
+		\end{center}
+		
+\end{frame}
+
+\begin{frame}[fragile]
+		\frametitle{L'idée}
+		\begin{lstlisting}[language=ML]
+(let id = \x.x in id)\end{lstlisting}
+		\begin{columns}
+				\begin{column}{0.4\textwidth}
+						\begin{center}
+						\begin{forest}
+								for tree = {
+										edge = {<-, semithick},
+										s sep+=10pt,
+										l sep+=15pt
+								}
+								[id
+								[$\lambda$ [$x$] [$x$] ]
+										[$x$]
+								]
+						\end{forest}
+						\end{center}
+				\end{column}
+				\begin{column}{0.6\textwidth}
+						\begin{center}
+						\begin{forest}
+								for tree = {
+										edge = {<-, semithick},
+										s sep+=10pt,
+										l sep+=15pt
+								}
+								[id
+										[$\lambda$, edge label={node[midway, left]{$\{\lambda:\tau\rightarrow \tau\}$}}
+												[$x:\tau$, edge label={node[midway, left]{$\{x:\tau\}$}}]
+												[x, edge label={node[midway, right]{$\{x:\tau\}$}}]
+										]
+										[$id$, edge label={node[midway, right]{$\{id:\forall.\tau\rightarrow\tau\}$}}]
+								]
+						\end{forest}
+						\end{center}
+				\end{column}
+		\end{columns}
+\end{frame}
+
+\section{Définitions}
+\subsection{Parsing}
+\begin{frame}
+		\frametitle{Grammaire}
+		\begin{center}
+		\begin{bnf}
+				$e$ : \textsf{Expr} ::= 
+				| \texttt{x} 
+				| \texttt{$f \quad e$} 
+				| \texttt{let $x$ = $e_1$ in $e_2$} 
+				| \texttt{\textbackslash$x$.$e$}
+				| \texttt{'(' $e$ ')'}
+		\end{bnf} 
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Hindley-Milner}
+		\[
+		\begin{prooftree}
+				\hypo{x:\sigma\in\Gamma}
+				\infer1[var]{\Gamma \vdash x:\sigma}
+		\end{prooftree}
+		\]
+		\newline
+		\[
+		\begin{prooftree}
+				\hypo{\Gamma, x:\tau \vdash e:\tau'}
+				\infer1[abs]{\Gamma \vdash \lambda x.e:\tau \to \tau'}
+		\end{prooftree}
+		\]
+		\newline
+		\[
+		\begin{prooftree}
+				\hypo{\Gamma \vdash f:\tau \to \tau'}
+				\hypo{\Gamma \vdash e : \tau}
+				\infer2[app]{\Gamma \vdash f\ e : \tau'}
+		\end{prooftree}
+		\]
+\end{frame}
+
+\subsection{Typesystem}
+\begin{frame}
+		\begin{small}
+		\frametitle{Hindley-Milner}
+		\begin{columns}
+				\begin{column}{0.5\textwidth}
+						\begin{enumerate}
+								\item Assignation de variables de types aux expressions
+								\item Génération de contraintes
+								\item Substitutions
+								\item Unification
+								\item Instantiation, généralisation
+						\end{enumerate}
+				\end{column}
+				\begin{column}{0.5\textwidth}
+						\begin{forest}
+								for tree = {
+										edge = {<-, semithick},
+										s sep+=10pt,
+										l sep+=15pt
+								}
+								[let
+								[$x: \tau$, edge label={node[midway, left]{$\{x:\tau\}$}}]
+										[$expr:\beta$,edge label={node[midway, right]{$\{\beta = int, \tau = int\}$}}
+												[+,edge label={node[midway, left]{$\{\tau = int\}$}}
+														[x, edge label={node[midway, left]{$\{x:\tau\}$}}]
+														[1]	
+												]
+										]
+								]
+						\end{forest}
+				\end{column}
+		\end{columns}
+\end{small}
+\end{frame}
+
+\section{Ma démonstration}
+\begin{frame}[fragile]
+		\frametitle{Ma démonstration}
+		\begin{lstlisting}[language=ML]
+let parse_let (program: program) (env: Types.env): traversal =
+    match program with
+    | Let :: Id i :: Assign :: t -> 
+        let open Types in
+        let { expr = body; t = t1; subst = subst1; rest; } = parse_expr t env in
+        let t' = generalize env (apply_subst subst1 t1) in 
+        let env' = extend_env env i t' in 
+
+        let { expr = in_expr; t = t2; subst = subst2; rest = rest'; } = parse_ins rest env' in
+
+        {
+            expr = Let (i, body, in_expr);
+            t = t2;
+            subst = subst2 *&* subst1;
+            rest = rest';
+        }
+    | _ -> failwith "Expected `Let`."
+		\end{lstlisting}
+\end{frame}
+
+\begin{frame}
+		\frametitle{Résultats}
+		Bah y'a rien mdr
+\end{frame}
+
+\section{Automates d'Arbres}
+\begin{frame}
+		\frametitle {Automates d'Arbres}
+		\begin{definition}[Alphabet gradué]
+				$\Sigma \equiv (\Sigma, ar)$
+		\end{definition}
+		\begin{definition}[Automates d'arbre]
+				$\mathcal{A} = (Q, \Sigma, F, \Delta)$
+		\end{definition}
+		\begin{center}
+				\begin{tikzpicture}
+				\end{tikzpicture}
+		\end{center}
+\end{frame}
+
+\section{Et après ?}
+\begin{frame}
+		\frametitle{Et après ?}
+		\begin{itemize}
+				\item Benchmarks plus précis 
+				\item Calcul formel de complexité / correction et terminaison
+				\item Constraint-Based Set Analysis
+				\item Raffiner l'utilisation d'automates d'arbres
+		\end{itemize}
+\end{frame}
+\end{document}

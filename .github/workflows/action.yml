@@ -1,0 +1,26 @@
+name: Test
+
+on: 
+  - push
+  - pull_request
+
+permissions: read-all
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./project
+    steps:
+      - name: Checkout tree
+        uses: actions/checkout@v4
+
+      - name: Set-up OCaml
+        uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: 5
+
+      - run: opam install . --deps-only --with-test
+
+      - run: opam exec -- dune runtest

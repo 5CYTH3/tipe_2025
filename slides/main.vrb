@@ -1,0 +1,20 @@
+\frametitle{Ma démonstration}
+		\begin{lstlisting}[language=ML]
+let parse_let (program: program) (env: Types.env): traversal =
+    match program with
+    | Let :: Id i :: Assign :: t ->
+        let open Types in
+        let { expr = body; t = t1; subst = subst1; rest; } = parse_expr t env in
+        let t' = generalize env (apply_subst subst1 t1) in
+        let env' = extend_env env i t' in
+
+        let { expr = in_expr; t = t2; subst = subst2; rest = rest'; } = parse_ins rest env' in
+
+        {
+            expr = Let (i, body, in_expr);
+            t = t2;
+            subst = subst2 *&* subst1;
+            rest = rest';
+        }
+    | _ -> failwith "Expected `Let`."
+		\end{lstlisting}
