@@ -69,7 +69,6 @@ let rec free_tvs t: ftvs =
     | Forall (v, t) -> Ftv.remove v (free_tvs t)
 ;;
 
-(* For now, returns a list but I don't like it. *)
 let free_tvs_env env =
     TypeMap.fold (fun _ t acc -> Ftv.union (free_tvs t) acc) env Ftv.empty
 ;;
@@ -116,32 +115,40 @@ let type_of_literal = function
     | Parser.Int _ -> Int
 ;;
 
-let rec infer_types env e: t * subst = 
-    let open Parser in
-    match e with
-    | Literal l ->
-        let t = type_of_literal l in
-        (t, TypeMap.empty)
-    | Var x ->
-        let t = apply_env env x in
-        (t, TypeMap.empty)
-    | Abs (x, e) ->
-        let t = fresh_tv () in
-        let env' = extend_env env x t in
-        let (t', s) = infer_types env' e in
-        ((apply_subst s t) @-> t', s)
-    | App (e1, e2) ->
-        let (t, s1) = infer_types env e1 in
-        let (t', s2) = infer_types (apply_subst_to_env s1 env) e2 in
-        let tv = fresh_tv () in
-        let s3 = unify (apply_subst s2 t) (t' @-> tv) in
-        let f_subst = s3 *&* s2 *&* s1 in
-        (apply_subst f_subst tv, f_subst)
-    | Let (x, e1, e2) ->
-        let (t, s1) = infer_types env e1 in
-        let t' = generalize env (apply_subst s1 t) in
+let rec infer_types_aux env e cont = 
+  let open Parser in
+  match e with
+  | Literal l ->
+      let t = type_of_literal l in
+      cont (t, TypeMap.empty)
+  | Var x ->
+      let t = apply_env env x in
+      cont (t, TypeMap.empty)
+  | Abs (x, e) ->
+      let t = fresh_tv () in
+      let env' = extend_env env x t in
+      infer_types_aux env' e (fun (t', s) ->
+        let t_res = (apply_subst s t) @-> t' in
+        cont (t_res, s)
+      )
+  | App (e1, e2) ->
+      infer_types_aux env e1 (fun (t1, s1) ->
+        let env' = apply_subst_to_env s1 env in
+        infer_types_aux env' e2 (fun (t2, s2) ->
+          let tv = fresh_tv () in
+          let s3 = unify (apply_subst s2 t1) (t2 @-> tv) in
+          let f_subst = s3 *&* s2 *&* s1 in
+          cont (apply_subst f_subst tv, f_subst)
+        )
+      )
+  | Let (x, e1, e2) ->
+      infer_types_aux env e1 (fun (t1, s1) ->
+        let t' = generalize env (apply_subst s1 t1) in
         let env' = extend_env env x t' in
-        let (t'', s2) = infer_types env' e2 in
-        (t'', s2 *&* s1)
-;;
+        infer_types_aux env' e2 (fun (t2, s2) ->
+          cont (t2, s2 *&* s1)
+        )
+      )
 
+let infer_types env e = 
+  infer_types_aux env e (fun res -> res)
