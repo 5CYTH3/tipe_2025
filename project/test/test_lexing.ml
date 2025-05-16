@@ -14,9 +14,15 @@ let test_id_let () =
         "let id = \\x. x in id"
 ;;
 
+let test_function_app () =
+    mock_test
+        ([Let; Id "two"; Assign; Lambda; Id "f"; Dot; Lambda; Id "x"; Dot; Id "f"; Id "f"; Id "x"; In; Id "two"])
+        "let two = \\f.\\x.f f x in two"
+
 
 let let_bindings_suite = [
     Alcotest.test_case "ID Function" `Slow test_id_let;
+    Alcotest.test_case "Application" `Slow test_function_app;
 ] 
 
 
