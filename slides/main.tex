@@ -16,7 +16,7 @@
 \usefonttheme[onlymath]{serif}
 
 %Information to be included in the title page:
-\title{Quelles grammaires permettent la fusion entre analyse syntaxique et analyse sémantique ?}
+\title{Optimisation de la vitesse de compilation par la fusion entre inférence de types et analyse syntaxique}
 \author{Enogad Le Biavant--Frederic}
 \institute{Alain René Lesage MPI}
 \date{2025}
@@ -79,6 +79,7 @@
 						\end{center}
 				\end{column}
 		\end{columns}
+		\only<4>{Parsing récursif descendant}
 \end{frame}
 
 \section{Définitions}
@@ -86,7 +87,7 @@
 \begin{frame}
 		\frametitle{Grammaire}
 		\begin{bnf}
-				$program$ ::= \{ $expr$ \};;
+				$program$ ::= $expr$;;
 				$expr$ ::= | $abs$ | $app$ | $letbinding$;;
 				$app$ ::= $term$ [\{ $term$ \}];;
 				$abs$ ::= "$\backslash$" $id\space$ "." $\space expr$;;
@@ -98,14 +99,26 @@
 \subsection{Théorie des types}
 \begin{frame}
 		\frametitle{TT - Définitions}
-		Type : classification de termes (Church\\
-		Système de typage : cadre de travail
+		Définition de Type : classification de termes (Church).\\
+		Théorie de travail : Lambda calcul simplement typé (LCST), polymorphique.\\
+		\[
+				\texttt{let\;} id = \lambda x.x :\forall \sigma\to\sigma
+		\]
 \end{frame}
 
 \begin{frame}
 		\frametitle{Opérations}
-		Déduction naturelle (Gentzen) et calcul des séquents.
-		
+		Déduction naturelle et calcul des séquents (Gentzen).
+		\[
+				H_1,...,H_n \vdash A_1,...,A_n
+		\]
+		\[
+		\begin{prooftree}
+				\hypo{A}
+				\hypo{B}
+				\infer2{C}
+		\end{prooftree}
+		\]
 \end{frame}
 
 \begin{frame}
@@ -177,7 +190,7 @@
 		Machine : i7 5th gen 3.00Ghz\\
 		Fichier de test : 1000 premiers nombres de church\\
 		Version non optimisée : ~30.0s\\
-		Version optimisée : ~3.0s
+		Version optimisée : ~3.88s
 \end{frame}
 
 \section{Formalisation}
@@ -187,6 +200,11 @@
 		\begin{itemize}
 				\item{$\mathcal F$ : Alphabet gradué (fonction d'arité $ar$) }
 		\end{itemize}
+\end{frame}
+
+\section{Conclusion}
+\begin{frame}
+		\frametitle{Conclusion}
 \end{frame}
 
 \section{Annexe}

@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1747437749.03041 "main.tex" "main.pdf" "main" 1747437752.93643 0
+["pdflatex"] 1747773563.45172 "main.tex" "main.pdf" "main" 1747773567.6296 0
   "/usr/share/texmf-dist/fonts/map/fontname/texfonts.map" 1742685315 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1742685315 1004 54797486969f23fa377b128694d548df ""
   "/usr/share/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1742685315 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -25,6 +25,7 @@
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb" 1742685315 36299 5f9df58c2139e7edcf37c8fca4bd384d ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb" 1742685315 35469 70d41d2b9ea31d5d813066df7c99281c ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb" 1742685315 35752 024fb6c41858982481f6968b5fc26508 ""
+  "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb" 1742685315 32726 0a1aea6fcd6468ee2cf64d891f5c43c8 ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb" 1742685315 24457 5cbb7bdf209d5d1ce9892a9b80a307cc ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb" 1742685315 24393 3b7eb51a67a0a62aec5849271bdb9c2e ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmss8.pfb" 1742685315 24420 52dbb8e8aa0069a1b987309557f8d303 ""
@@ -245,11 +246,11 @@
   "/usr/share/texmf-dist/web2c/texmf.cnf" 1742685315 42087 b0f9697c952c8f5a8eede4134282cb0d ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1744225184 5311557 9da84c45f5b388655502706482323571 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1744225114 2008234 66941df1598a4f2cedb4763de9e7148e ""
-  "main.aux" 1747437752.79661 3791 95f7a31ba3bc8e170d291c6b7c92ded8 "pdflatex"
-  "main.nav" 1747437752.79761 2317 71d4149664bd6c5217a75f1a8361fe80 "pdflatex"
-  "main.out" 1747437752.79761 776 b562421e0d7868553fab465801fd2cae "pdflatex"
-  "main.tex" 1747437748.33055 4761 5656b54cb1c1de2ae9669e986dba838b ""
-  "main.vrb" 1747437752.7449 20 719df47cce7db8c8074cbb72ef8f84a4 "pdflatex"
+  "main.aux" 1747773567.4907 4199 6328b779c31d578b203e6d4a577630cb "pdflatex"
+  "main.nav" 1747773567.4927 2570 7f5fb141fb501f0beb241d355512ce49 "pdflatex"
+  "main.out" 1747773567.4917 869 44fa4d75dbd9f136ea21d82cd004743c "pdflatex"
+  "main.tex" 1747773561.51561 5144 a56fee717b92535a98566a5f8987364c ""
+  "main.vrb" 1747773567.43615 20 719df47cce7db8c8074cbb72ef8f84a4 "pdflatex"
   "res/repo.png" 1746796276.17027 25343 74505612b5803ec2c097870dfcf0ca91 ""
   (generated)
   "main.aux"
