@@ -1,6 +1,6 @@
 
 let ctx = Types.TypeMap.of_list [
-    "+", Types.Abs (Types.Int, Types.Abs (Types.Int, Types.Int)); 
+    "add", Types.Abs (Types.Int, Types.Abs (Types.Int, Types.Int)); 
     "y", Types.Int
     (* App is left-assoc but TAbs is right-assoc *)
 ]
@@ -36,6 +36,6 @@ let show_program (e, t, ctx) =
 *)
 
 let () =
-    from_file "test/main.lc" |> ignore
+    from_file "test/main2.lc" |> ignore
     (* |> show_program *)
 
