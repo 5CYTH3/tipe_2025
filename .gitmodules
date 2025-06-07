@@ -1,0 +1,8 @@
+[submodule "classic"]
+	path = classic
+	url = https://github.com/5CYTH3/tipe_2025.git
+	branch = v1.0-fused
+[submodule "fused"]
+	path = fused
+	url = https://github.com/5CYTH3/tipe_2025.git
+	branch = v1.0-fused
