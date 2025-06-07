@@ -1,5 +1,5 @@
 (executable
  (public_name tlp_tipe)
  (name main)
- (libraries lexer token parser)
+ (libraries lexer token parser cmdliner)
  (preprocess (pps ppx_deriving.show)))

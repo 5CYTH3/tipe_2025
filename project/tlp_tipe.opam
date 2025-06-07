@@ -15,6 +15,7 @@ depends: [
   "dune" {>= "3.15"}
   "alcotest"
   "ppx_deriving"
+  "cmdliner"
   "odoc" {with-doc}
 ]
 build: [

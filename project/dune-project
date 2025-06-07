@@ -19,7 +19,7 @@
  (name tlp_tipe)
  (synopsis "A little Typed LR Parser")
  (description "A little Typed LR(1) Parser project for my TIPE 2025, aiming to combine the steps of type inference/type checking and parsing")
- (depends ocaml dune alcotest ppx_deriving)
+ (depends ocaml dune alcotest ppx_deriving cmdliner)
  (tags
   (topics "parser" your project)))
 
