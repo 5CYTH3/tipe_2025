@@ -8,6 +8,7 @@
 \usepackage{simplebnf}
 \usepackage{graphicx}
 \usepackage{listings}
+\usepackage{tcolorbox}
 
 \graphicspath{ {./res/} }
 
@@ -32,6 +33,7 @@
 		\begin{center}
 				\includegraphics[scale=0.25]{repo}
 		\end{center}
+		Comment optimiser la vitesse de compilation en fusionnant analyse syntaxique et sémantique ?
 		
 \end{frame}
 
@@ -107,21 +109,6 @@
 \end{frame}
 
 \begin{frame}
-		\frametitle{Opérations}
-		Déduction naturelle et calcul des séquents (Gentzen).
-		\[
-				H_1,...,H_n \vdash A_1,...,A_n
-		\]
-		\[
-		\begin{prooftree}
-				\hypo{A}
-				\hypo{B}
-				\infer2{C}
-		\end{prooftree}
-		\]
-\end{frame}
-
-\begin{frame}
 \frametitle{Hindley-Milner}
 		\[
 		\begin{prooftree}
@@ -193,7 +180,9 @@
 		Version non optimisée : $\approx 26.37s$\\
 		Version optimisée : $\approx 3.88s$\\
 		\vspace{5mm}
-		Fichier de test :
+		Fichier de test : 10K application de fonction successeur\\
+		Version non optimisée : $\approx 1.48s$\\
+		Version optimisée : $\approx 1.51s$
 \end{frame}
 
 \section{Formalisation}
@@ -203,11 +192,18 @@
 		\begin{itemize}
 				\item{$\mathcal F$ : Alphabet gradué (fonction d'arité $ar$) }
 		\end{itemize}
+		On peut décrire la grammaire comme une NRTG
 \end{frame}
 
 \section{Conclusion}
 \begin{frame}
 		\frametitle{Conclusion}
+		\begin{tcolorbox}[title=Bénéfices]
+				Durée inférieure lorsque beaucoup d'unifications
+		\end{tcolorbox}
+		\begin{tcolorbox}
+				Plus permissif envers les grammaires très imbriquées que les systèmes traditionnels
+		\end{tcolorbox}
 \end{frame}
 
 \section{Annexe}
