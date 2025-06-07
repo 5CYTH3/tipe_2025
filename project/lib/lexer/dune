@@ -1,6 +1,0 @@
-(library
- (name lexer)
- (public_name tlp_tipe.lexer)
- (libraries token))
-
-

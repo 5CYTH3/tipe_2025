@@ -8,16 +8,19 @@
 \usepackage{simplebnf}
 \usepackage{graphicx}
 \usepackage{listings}
+\usepackage{tcolorbox}
 
 \graphicspath{ {./res/} }
 
 \setbeamertemplate{footline}[frame number]
 
+\usefonttheme[onlymath]{serif}
+
 %Information to be included in the title page:
-\title{Quelles grammaires permettent la fusion entre analyse syntaxique et analyse sémantique ?}
+\title{Optimisation de la vitesse de compilation par la fusion entre inférence de types et analyse syntaxique}
 \author{Enogad Le Biavant--Frederic}
-\institute{Alain René Lesage MP2I}
-\date{2024}
+\institute{Alain René Lesage MPI}
+\date{2025}
 
 \begin{document}
 
@@ -30,14 +33,20 @@
 		\begin{center}
 				\includegraphics[scale=0.25]{repo}
 		\end{center}
+		Comment optimiser la vitesse de compilation en fusionnant analyse syntaxique et sémantique ?
 		
 \end{frame}
 
 \begin{frame}[fragile]
 		\frametitle{L'idée}
-		\begin{lstlisting}[language=Lisp]
-(defun succ (x) + x 1)
-		\end{lstlisting}
+
+		$\Gamma = \{ 
+				\only<1->{\texttt +: int \rightarrow int \rightarrow int}
+				\only<2->{,\; \texttt x: \tau}
+		\}$
+		\\
+		$\texttt{let} \; succ = \lambda x.(+ \; x \; 1)$
+		
 		\begin{columns}
 				\begin{column}{0.5\textwidth}
 						\begin{center}
@@ -47,11 +56,9 @@
 								}
 								[succ
 										[x]
-										[expr
-												[+, name=spec +
-														[x]
-														[1]	
-												]
+										[+, name=spec +
+												[x]
+												[1]	
 										]
 								]
 						\end{forest}
@@ -64,21 +71,17 @@
 										edge = {<-, semithick},
 								}
 								[succ
-								[x,edge label={node[midway, left]{$\{x:\tau\}$}}]
-										[expr,edge label={node[midway, right]{$\{expr:\beta\}$}}
-												[+,edge label={node[midway, right]{$\{\beta = int, \tau = int\}$}}
-														[x, edge label={node[midway, left]{$\{x:\tau\}$}}]
-														[1]	
-												]
+								[x,edge label={node[midway, left]{\only<1->{$\{x:\tau\}$}}}]
+										[+,edge label={node[midway, right]{\only<3->{$\{\tau = int\}$}}}
+												[x, edge label={node[midway, left]{\only<2->{$\{x:\tau\}$}}}]
+												[1]	
 										]
 								]
 						\end{forest}
 						\end{center}
 				\end{column}
 		\end{columns}
-												%[DP,draw] {
-														%\draw[->,dotted] () to[out=south west,in=south] (spec succ);
-												%}
+		\only<4>{Parsing récursif descendant}
 \end{frame}
 
 \section{Définitions}
@@ -87,41 +90,22 @@
 		\frametitle{Grammaire}
 		\begin{bnf}
 				$program$ ::= $expr$;;
-				$expr$    ::= | $list$ | $atom$ | $function$;;
-				$list$    ::= '(' [\{$expr$\}] ')';;
-				$atom$    ::= | $id$ | $literal$;;
-				$literal$ ::= | string | int | bool;;
-				$function$::= '(' 'defun' $id$ '(' [\{$id$\}] ')' $expr$ ')';;
+				$expr$ ::= | $abs$ | $app$ | $letbinding$;;
+				$app$ ::= $term$ [\{ $term$ \}];;
+				$abs$ ::= "$\backslash$" $id\space$ "." $\space expr$;;
+				$letbinding$ ::= "let" $id$ "=" $expr$ "in" $expr$;;
+				$term$ ::= | \texttt{string} | \texttt{int} | \texttt{bool} | $id$ | "(" $expr$ ")"
 		\end{bnf} 
 \end{frame}
 
 \subsection{Théorie des types}
 \begin{frame}
-		\frametitle{Définition}
-		\begin{center}
-				\includegraphics[scale=0.125]{russell}
-		\end{center}
-\end{frame}
-
-\begin{frame}
-		\frametitle{Opérations}
-		\begin{center}
-				\[
-				\begin{prooftree}
-						\hypo{A}
-						\hypo{B}
-						\infer2{C}
-				\end{prooftree}
-				\]
-				\newline
-				\[
-				A \vdash B
-				\]
-				\newline
-				\[
-				\forall \sigma. \sigma\to\sigma
+		\frametitle{TT - Définitions}
+		Définition de Type : classification de termes (Church).\\
+		Théorie de travail : Lambda calcul simplement typé (LCST), polymorphique.\\
+		\[
+				\texttt{let\;} id = \lambda x.x :\forall \sigma\to\sigma
 		\]
-		\end{center}
 \end{frame}
 
 \begin{frame}
@@ -151,6 +135,7 @@
 
 \begin{frame}
 		\frametitle{Hindley-Milner}
+		Algorithme W
 		\begin{columns}
 				\begin{column}{0.5\textwidth}
 						\begin{enumerate}
@@ -180,80 +165,49 @@
 		\end{columns}
 \end{frame}
 
-\section{Ma démonstration}
-\begin{frame}[fragile]
-		\frametitle{Ma démonstration}
-		\begin{lstlisting}[language=Ml]
-and parse_atoms (program: Token.t list) (env: Types.env): expr * Token.t list = 
-    match program with
-    | LParen :: _ -> parse_lists program
-    | Id i :: t -> begin
-        let s = Types.lookup env i in
-        { expr: Atom (Id i); rest: t; env; t: Types.instantiate s; }
-    end
-    | Literal l :: t -> begin
-        match l with
-        | Int i -> (Atom (Int i), t)
-        | Str s -> (Atom (Str s), t)
-        | Bool b -> (Atom (Bool b), t)
-    end
-    | _ -> failwith "Orphan closing parenthese `RPAREN`"
-;;
-		\end{lstlisting}
+\section{Résultats}
+\begin{frame}[t]
+		\frametitle{Résultats}
+		
+		\begin{center}
+				$\mathcal W : \tilde \Gamma \times Expr \to Subst \times Type$\\
+				$\mathcal W^* : \tilde \Gamma \times L \to Subst \times \Gamma \times Expr \times L $	
+		\end{center}
+		
+		Machine : i7 5th gen 3.00Ghz\\
+		\vspace{5mm}
+		Fichier de test : 1000 premiers nombres de church\\
+		Version non optimisée : $\approx 26.37s$\\
+		Version optimisée : $\approx 3.88s$\\
+		\vspace{5mm}
+		Fichier de test : 10K application de fonction successeur\\
+		Version non optimisée : $\approx 1.48s$\\
+		Version optimisée : $\approx 1.51s$
 \end{frame}
 
-\section{Et après ?}
+\section{Formalisation}
 \begin{frame}
-		\frametitle{Et après ?}
+		\frametitle{Formalisation}
+		Automates d'arbres : $\mathcal A  = (\mathcal F, Q, Q_f, \Delta)$\\
 		\begin{itemize}
-				\item<1-> Est-ce que il y a un réel impact sur la complexité temporelle ?
-				\item<2->Pour quelles grammaires est-ce possible ?
-				\item<3->Formalisation de cet outil ?
+				\item{$\mathcal F$ : Alphabet gradué (fonction d'arité $ar$) }
 		\end{itemize}
+		On peut décrire la grammaire comme une NRTG
+\end{frame}
+
+\section{Conclusion}
+\begin{frame}
+		\frametitle{Conclusion}
+		\begin{tcolorbox}[title=Bénéfices]
+				Durée inférieure lorsque beaucoup d'unifications
+		\end{tcolorbox}
+		\begin{tcolorbox}
+				Plus permissif envers les grammaires très imbriquées que les systèmes traditionnels
+		\end{tcolorbox}
 \end{frame}
 
 \section{Annexe}
 \begin{frame}[fragile]
 		\frametitle{Annexe}
-		\begin{lstlisting}[language=Ml]
-let rec substitute s t =
-    match t with
-    | TVar v -> begin 
-        match TypeMap.find_opt v s with
-        | Some x -> x
-        | None -> TVar v
-    end
-    | Func (args, ret) -> Func (List.map (substitute s) args, substitute s ret)
-    | t -> t
-;;
-
-		\end{lstlisting}
 \end{frame}
-
-\begin{frame}[fragile]
-		\frametitle{Annexe}
-		\begin{lstlisting}[language=ml]
-let rec unify t1 t2 =
-    match (t1, t2) with
-    | (Func (args1, ret1), Func (args2, ret2)) when List.length args1 = List.length args2 ->
-        let s1 = List.fold_left2 (fun s arg1 arg2 -> 
-            compose_subst s (unify (substitute s arg1) (substitute s arg2))
-        ) empty_subst_set args1 args2 in
-        let s2 = unify (substitute s1 ret1) (substitute s1 ret2) in
-        compose_subst s2 s1
-    | TVar v, t | t, TVar v -> v |-> t
-    | Int, Int | Bool, Bool | Str, Str -> empty_subst_set
-    | _ -> raise (TypeError "Cannot unify types")
-
-and (|->) v t =
-    (* Binding operation from a type variable to a type (or type variable) *)
-    if t = TVar v then empty_subst_set
-    else if occurs_check v t then raise (TypeError "Occurs check failed")
-    else TypeMap.singleton v t
-;;
-
-
-		\end{lstlisting}
-\end{frame}
-
 \end{document}
