@@ -1,0 +1,6 @@
+(library
+ (name fused)
+ (public_name tlp_tipe.fused)
+ (libraries token expr types)
+ (preprocess (pps ppx_deriving.show)))
+

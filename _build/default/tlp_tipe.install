@@ -1,6 +1,27 @@
 lib: [
   "_build/install/default/lib/tlp_tipe/META"
+  "_build/install/default/lib/tlp_tipe/classic/classic.a" {"classic/classic.a"}
+  "_build/install/default/lib/tlp_tipe/classic/classic.cma" {"classic/classic.cma"}
+  "_build/install/default/lib/tlp_tipe/classic/classic.cmi" {"classic/classic.cmi"}
+  "_build/install/default/lib/tlp_tipe/classic/classic.cmt" {"classic/classic.cmt"}
+  "_build/install/default/lib/tlp_tipe/classic/classic.cmx" {"classic/classic.cmx"}
+  "_build/install/default/lib/tlp_tipe/classic/classic.cmxa" {"classic/classic.cmxa"}
+  "_build/install/default/lib/tlp_tipe/classic/classic.ml" {"classic/classic.ml"}
   "_build/install/default/lib/tlp_tipe/dune-package"
+  "_build/install/default/lib/tlp_tipe/expr/expr.a" {"expr/expr.a"}
+  "_build/install/default/lib/tlp_tipe/expr/expr.cma" {"expr/expr.cma"}
+  "_build/install/default/lib/tlp_tipe/expr/expr.cmi" {"expr/expr.cmi"}
+  "_build/install/default/lib/tlp_tipe/expr/expr.cmt" {"expr/expr.cmt"}
+  "_build/install/default/lib/tlp_tipe/expr/expr.cmx" {"expr/expr.cmx"}
+  "_build/install/default/lib/tlp_tipe/expr/expr.cmxa" {"expr/expr.cmxa"}
+  "_build/install/default/lib/tlp_tipe/expr/expr.ml" {"expr/expr.ml"}
+  "_build/install/default/lib/tlp_tipe/fused/fused.a" {"fused/fused.a"}
+  "_build/install/default/lib/tlp_tipe/fused/fused.cma" {"fused/fused.cma"}
+  "_build/install/default/lib/tlp_tipe/fused/fused.cmi" {"fused/fused.cmi"}
+  "_build/install/default/lib/tlp_tipe/fused/fused.cmt" {"fused/fused.cmt"}
+  "_build/install/default/lib/tlp_tipe/fused/fused.cmx" {"fused/fused.cmx"}
+  "_build/install/default/lib/tlp_tipe/fused/fused.cmxa" {"fused/fused.cmxa"}
+  "_build/install/default/lib/tlp_tipe/fused/fused.ml" {"fused/fused.ml"}
   "_build/install/default/lib/tlp_tipe/lexer/lexer.a" {"lexer/lexer.a"}
   "_build/install/default/lib/tlp_tipe/lexer/lexer.cma" {"lexer/lexer.cma"}
   "_build/install/default/lib/tlp_tipe/lexer/lexer.cmi" {"lexer/lexer.cmi"}
@@ -9,13 +30,6 @@ lib: [
   "_build/install/default/lib/tlp_tipe/lexer/lexer.cmxa" {"lexer/lexer.cmxa"}
   "_build/install/default/lib/tlp_tipe/lexer/lexer.ml" {"lexer/lexer.ml"}
   "_build/install/default/lib/tlp_tipe/opam"
-  "_build/install/default/lib/tlp_tipe/parser/parser.a" {"parser/parser.a"}
-  "_build/install/default/lib/tlp_tipe/parser/parser.cma" {"parser/parser.cma"}
-  "_build/install/default/lib/tlp_tipe/parser/parser.cmi" {"parser/parser.cmi"}
-  "_build/install/default/lib/tlp_tipe/parser/parser.cmt" {"parser/parser.cmt"}
-  "_build/install/default/lib/tlp_tipe/parser/parser.cmx" {"parser/parser.cmx"}
-  "_build/install/default/lib/tlp_tipe/parser/parser.cmxa" {"parser/parser.cmxa"}
-  "_build/install/default/lib/tlp_tipe/parser/parser.ml" {"parser/parser.ml"}
   "_build/install/default/lib/tlp_tipe/token/token.a" {"token/token.a"}
   "_build/install/default/lib/tlp_tipe/token/token.cma" {"token/token.cma"}
   "_build/install/default/lib/tlp_tipe/token/token.cmi" {"token/token.cmi"}
@@ -32,8 +46,10 @@ lib: [
   "_build/install/default/lib/tlp_tipe/types/types.ml" {"types/types.ml"}
 ]
 libexec: [
+  "_build/install/default/lib/tlp_tipe/classic/classic.cmxs" {"classic/classic.cmxs"}
+  "_build/install/default/lib/tlp_tipe/expr/expr.cmxs" {"expr/expr.cmxs"}
+  "_build/install/default/lib/tlp_tipe/fused/fused.cmxs" {"fused/fused.cmxs"}
   "_build/install/default/lib/tlp_tipe/lexer/lexer.cmxs" {"lexer/lexer.cmxs"}
-  "_build/install/default/lib/tlp_tipe/parser/parser.cmxs" {"parser/parser.cmxs"}
   "_build/install/default/lib/tlp_tipe/token/token.cmxs" {"token/token.cmxs"}
   "_build/install/default/lib/tlp_tipe/types/types.cmxs" {"types/types.cmxs"}
 ]

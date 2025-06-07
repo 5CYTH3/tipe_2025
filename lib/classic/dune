@@ -1,0 +1,6 @@
+(library
+ (name classic)
+ (public_name tlp_tipe.classic)
+ (libraries token expr types)
+ (preprocess (pps ppx_deriving.show)))
+

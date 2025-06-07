@@ -4,7 +4,28 @@
 (files
  (lib
   (META
+   classic/classic.a
+   classic/classic.cma
+   classic/classic.cmi
+   classic/classic.cmt
+   classic/classic.cmx
+   classic/classic.cmxa
+   classic/classic.ml
    dune-package
+   expr/expr.a
+   expr/expr.cma
+   expr/expr.cmi
+   expr/expr.cmt
+   expr/expr.cmx
+   expr/expr.cmxa
+   expr/expr.ml
+   fused/fused.a
+   fused/fused.cma
+   fused/fused.cmi
+   fused/fused.cmt
+   fused/fused.cmx
+   fused/fused.cmxa
+   fused/fused.ml
    lexer/lexer.a
    lexer/lexer.cma
    lexer/lexer.cmi
@@ -13,13 +34,6 @@
    lexer/lexer.cmxa
    lexer/lexer.ml
    opam
-   parser/parser.a
-   parser/parser.cma
-   parser/parser.cmi
-   parser/parser.cmt
-   parser/parser.cmx
-   parser/parser.cmxa
-   parser/parser.ml
    token/token.a
    token/token.cma
    token/token.cmi
@@ -35,8 +49,55 @@
    types/types.cmxa
    types/types.ml))
  (libexec
-  (lexer/lexer.cmxs parser/parser.cmxs token/token.cmxs types/types.cmxs))
+  (classic/classic.cmxs
+   expr/expr.cmxs
+   fused/fused.cmxs
+   lexer/lexer.cmxs
+   token/token.cmxs
+   types/types.cmxs))
  (bin (tlp_tipe)))
+(library
+ (name tlp_tipe.classic)
+ (kind normal)
+ (archives (byte classic/classic.cma) (native classic/classic.cmxa))
+ (plugins (byte classic/classic.cma) (native classic/classic.cmxs))
+ (native_archives classic/classic.a)
+ (requires tlp_tipe.token tlp_tipe.expr tlp_tipe.types ppx_deriving.runtime)
+ (main_module_name Classic)
+ (modes byte native)
+ (modules
+  (singleton
+   (obj_name classic)
+   (visibility public)
+   (source (path Classic) (impl (path classic/classic.ml))))))
+(library
+ (name tlp_tipe.expr)
+ (kind normal)
+ (archives (byte expr/expr.cma) (native expr/expr.cmxa))
+ (plugins (byte expr/expr.cma) (native expr/expr.cmxs))
+ (native_archives expr/expr.a)
+ (requires ppx_deriving.runtime)
+ (main_module_name Expr)
+ (modes byte native)
+ (modules
+  (singleton
+   (obj_name expr)
+   (visibility public)
+   (source (path Expr) (impl (path expr/expr.ml))))))
+(library
+ (name tlp_tipe.fused)
+ (kind normal)
+ (archives (byte fused/fused.cma) (native fused/fused.cmxa))
+ (plugins (byte fused/fused.cma) (native fused/fused.cmxs))
+ (native_archives fused/fused.a)
+ (requires tlp_tipe.token tlp_tipe.expr tlp_tipe.types ppx_deriving.runtime)
+ (main_module_name Fused)
+ (modes byte native)
+ (modules
+  (singleton
+   (obj_name fused)
+   (visibility public)
+   (source (path Fused) (impl (path fused/fused.ml))))))
 (library
  (name tlp_tipe.lexer)
  (kind normal)
@@ -51,20 +112,6 @@
    (obj_name lexer)
    (visibility public)
    (source (path Lexer) (impl (path lexer/lexer.ml))))))
-(library
- (name tlp_tipe.parser)
- (kind normal)
- (archives (byte parser/parser.cma) (native parser/parser.cmxa))
- (plugins (byte parser/parser.cma) (native parser/parser.cmxs))
- (native_archives parser/parser.a)
- (requires tlp_tipe.lexer tlp_tipe.types ppx_deriving.runtime)
- (main_module_name Parser)
- (modes byte native)
- (modules
-  (singleton
-   (obj_name parser)
-   (visibility public)
-   (source (path Parser) (impl (path parser/parser.ml))))))
 (library
  (name tlp_tipe.token)
  (kind normal)

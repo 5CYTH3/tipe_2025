@@ -1,3 +1,32 @@
+package "classic" (
+  directory = "classic"
+  description = ""
+  requires =
+  "ppx_deriving.runtime tlp_tipe.expr tlp_tipe.token tlp_tipe.types"
+  archive(byte) = "classic.cma"
+  archive(native) = "classic.cmxa"
+  plugin(byte) = "classic.cma"
+  plugin(native) = "classic.cmxs"
+)
+package "expr" (
+  directory = "expr"
+  description = ""
+  requires = "ppx_deriving.runtime"
+  archive(byte) = "expr.cma"
+  archive(native) = "expr.cmxa"
+  plugin(byte) = "expr.cma"
+  plugin(native) = "expr.cmxs"
+)
+package "fused" (
+  directory = "fused"
+  description = ""
+  requires =
+  "ppx_deriving.runtime tlp_tipe.expr tlp_tipe.token tlp_tipe.types"
+  archive(byte) = "fused.cma"
+  archive(native) = "fused.cmxa"
+  plugin(byte) = "fused.cma"
+  plugin(native) = "fused.cmxs"
+)
 package "lexer" (
   directory = "lexer"
   description = ""
@@ -6,15 +35,6 @@ package "lexer" (
   archive(native) = "lexer.cmxa"
   plugin(byte) = "lexer.cma"
   plugin(native) = "lexer.cmxs"
-)
-package "parser" (
-  directory = "parser"
-  description = ""
-  requires = "ppx_deriving.runtime tlp_tipe.lexer tlp_tipe.types"
-  archive(byte) = "parser.cma"
-  archive(native) = "parser.cmxa"
-  plugin(byte) = "parser.cma"
-  plugin(native) = "parser.cmxs"
 )
 package "token" (
   directory = "token"

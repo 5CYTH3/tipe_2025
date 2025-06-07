@@ -1,0 +1,5 @@
+(library
+ (name benchmarks)
+ (libraries csv lexer classic fused)
+ (preprocess (pps ppx_deriving.show)))
+

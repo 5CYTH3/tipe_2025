@@ -1,4 +1,4 @@
 (tests
- (names test_lexing test_parsing)
- (libraries token parser types alcotest))
+ (names test_lexing test_fused_parsing)
+ (libraries lexer expr token classic fused types alcotest))
 

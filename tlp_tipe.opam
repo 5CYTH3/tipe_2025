@@ -16,6 +16,7 @@ depends: [
   "alcotest"
   "ppx_deriving"
   "cmdliner"
+  "csv"
   "odoc" {with-doc}
 ]
 build: [
