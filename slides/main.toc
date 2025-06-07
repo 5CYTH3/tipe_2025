@@ -1,7 +1,0 @@
-\beamer@sectionintoc {1}{Présentation générale}{2}{0}{1}
-\beamer@sectionintoc {2}{Définitions}{4}{0}{2}
-\beamer@subsectionintoc {2}{1}{Parsing}{4}{0}{2}
-\beamer@subsectionintoc {2}{2}{Typesystem}{6}{0}{2}
-\beamer@sectionintoc {3}{Ma démonstration}{7}{0}{3}
-\beamer@sectionintoc {4}{Automates d'Arbres}{9}{0}{4}
-\beamer@sectionintoc {5}{Et après ?}{10}{0}{5}
