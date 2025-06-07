@@ -5,5 +5,5 @@ let time f l ctx =
     stop -. start
 
 let list_to_csv l =
-    List.map (fun (n, fused, classic) -> [n; fused; classic]) l
+    List.map (fun (n, fused, classic) -> [string_of_int n; string_of_float fused; string_of_float classic]) l
 

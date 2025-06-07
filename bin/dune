@@ -1,5 +1,5 @@
 (executable
  (public_name tlp_tipe)
  (name main)
- (libraries benchmarks types expr lexer cmdliner)
+ (libraries benchmarks csv types expr lexer cmdliner)
  (preprocess (pps ppx_deriving.show)))

@@ -41,7 +41,8 @@ let from_str parser s b_time =
 let bench_cmd ints: [ `Ok of unit | `Error of bool * string | `Help of Manpage.format * string option ] =
     Printf.printf "Running bench with inputs: %s\n"
         (String.concat ", " (List.map string_of_int ints));
-    Benchmarks.Church_num.run_on_list ints 5 |> Benchmarks.Church_num.show_data |> print_string;
+    let data = Benchmarks.Church_num.run_on_list ints 5 |> Benchmarks.Utils.list_to_csv in
+    Csv.save "output.csv" data;
     `Ok ()
 
 let ints_arg =
