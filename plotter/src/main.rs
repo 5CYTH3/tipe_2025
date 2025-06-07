@@ -1,3 +1,5 @@
+use std::fs::File;
+
 use plotters::prelude::*;
 
 #[derive(Debug, serde::Deserialize)]
@@ -8,7 +10,9 @@ pub struct Record {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut rdr = csv::Reader::from_reader(std::io::stdin());
+    let file = std::fs::read_to_string("output.csv").expect("CANNOT READ THE FILE MFER");
+
+    let mut rdr = csv::Reader::from_reader(file.as_bytes());
     let mut vec_f: Vec<(f32, f32)> = Vec::new();
     let mut vec_c: Vec<(f32, f32)> = Vec::new();
     for result in rdr.deserialize() {
@@ -25,7 +29,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .set_label_area_size(LabelAreaPosition::Left, 40)
         .set_label_area_size(LabelAreaPosition::Bottom, 40)
         .caption("Church Numerals speed", ("sans-serif", 30))
-        .build_cartesian_2d(0f32..10000f32, 0f32..10000f32)
+        .build_cartesian_2d(0f32..10000f32, 0f32..1000f32)
         .unwrap();
 
     ctx.configure_mesh().draw().unwrap();
