@@ -5,3 +5,5 @@ slides/main.*
 
 # But keep files with .text extension
 !slides/main.tex
+
+plotter/target/
