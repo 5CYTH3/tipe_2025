@@ -1,0 +1,43 @@
+name: Build LaTeX and Conditionally Release PDF
+
+on:
+  push:
+    branches:
+      - master # Change to your working branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Get commit message
+        id: get_commit
+        run: |
+          echo "message=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
+
+      - name: Exit if not a release commit
+        if: ${{ !contains(steps.get_commit.outputs.message, '[release]') }}
+        run: |
+          echo "Not a release commit. Skipping release."
+          exit 0
+
+      - name: Install LaTeX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-full
+
+      - name: Compile LaTeX
+        run: |
+          pdflatex main.tex
+
+      - name: Create or update release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: continuous-release
+          name: Latest PDF Release
+          files: main.pdf
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
