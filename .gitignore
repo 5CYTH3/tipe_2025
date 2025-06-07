@@ -1,0 +1,7 @@
+*.pdf
+
+# Ignore everything named 'main'
+slides/main.*
+
+# But keep files with .text extension
+!slides/main.tex
