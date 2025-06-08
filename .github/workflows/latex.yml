@@ -31,13 +31,13 @@ jobs:
 
       - name: Compile LaTeX
         run: |
-          pdflatex main.tex
+          pdflatex slides/main.tex
 
       - name: Create or update release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: continuous-release
           name: Latest PDF Release
-          files: main.pdf
+          files: slides/main.pdf
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

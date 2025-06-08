@@ -1,4 +1,9 @@
-\frametitle{Annexe}
-		\begin{lstlisting}
+\frametitle{Annexe - Parsing fusionné}
+		\begin{lstlisting}[language=ML]
 			
+let parse (program: Token.program) (env: Types.env) =
+    Types.reset_tv_counter ();
+    let { expr; t; subst = _; rest = _; } = parse_expr program env in
+    (expr, t)
 		\end{lstlisting}
+	
