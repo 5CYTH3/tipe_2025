@@ -32,6 +32,9 @@ jobs:
       - name: Compile LaTeX
         run: |
           pdflatex slides/main.tex
+          biber slides/main.tex
+          pdflatex slides/main.tex
+          pdflatex slides/main.tex
 
       - name: Create or update release
         uses: softprops/action-gh-release@v1

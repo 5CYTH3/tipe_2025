@@ -5,4 +5,5 @@
 \beamer@sectionintoc {3}{Résultats}{11}{0}{3}
 \beamer@sectionintoc {4}{Conclusion}{13}{0}{4}
 \beamer@sectionintoc {5}{Formalisation}{14}{0}{5}
-\beamer@sectionintoc {6}{Annexe}{15}{0}{6}
+\beamer@sectionintoc {6}{Bibliographie}{15}{0}{6}
+\beamer@sectionintoc {8}{Annexe}{16}{0}{7}
