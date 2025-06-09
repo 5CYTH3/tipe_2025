@@ -31,10 +31,11 @@ jobs:
 
       - name: Compile LaTeX
         run: |
-          pdflatex slides/main.tex
-          biber slides/main.tex
-          pdflatex slides/main.tex
-          pdflatex slides/main.tex
+          cd sources
+          pdflatex main.tex
+          biber main.tex
+          pdflatex main.tex
+          pdflatex main.tex
 
       - name: Create or update release
         uses: softprops/action-gh-release@v1
