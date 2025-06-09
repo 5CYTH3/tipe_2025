@@ -31,7 +31,7 @@ jobs:
 
       - name: Compile LaTeX
         run: |
-          cd sources
+          cd slides
           pdflatex main.tex
           biber main.tex
           pdflatex main.tex
