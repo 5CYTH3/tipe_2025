@@ -15,3 +15,5 @@ https://www.reddit.com/r/ProgrammingLanguages/comments/7rtx2z/integrating_type_s
 [Context Sensitive Parsing for Programming Languages](https://www.sciencedirect.com/science/article/pii/S2590118422000697)
 Problématique complete :
 Implementing Type Checking and type inference algorithm at parsing time to increase efficiency (drop a constant) for Bottom-up LR parsers
+ee
+
